@@ -38,12 +38,17 @@ final class InitializeResult {
   final int protocolVersion;
   final bool supportsLoadSession;
   final bool supportsSessionList;
+
+  /// Whether the agent accepts `session/delete`.
+  final bool supportsSessionDelete;
+
   final List<AuthMethod> authMethods;
 
   const InitializeResult({
     required this.protocolVersion,
     required this.supportsLoadSession,
     required this.supportsSessionList,
+    required this.supportsSessionDelete,
     required this.authMethods,
   });
 
@@ -58,6 +63,7 @@ final class InitializeResult {
       protocolVersion: json['protocolVersion'] as int? ?? 1,
       supportsLoadSession: caps['loadSession'] == true,
       supportsSessionList: sessionCaps['list'] != null,
+      supportsSessionDelete: sessionCaps['delete'] != null,
       authMethods: (json['authMethods'] as List<Object?>? ?? const [])
           .whereType<Map<String, Object?>>()
           .map(AuthMethod.fromJson)

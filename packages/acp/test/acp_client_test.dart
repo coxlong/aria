@@ -58,12 +58,18 @@ void main() {
 
       reply(transport, <String, Object?>{
         'protocolVersion': 1,
-        'agentCapabilities': <String, Object?>{'loadSession': true},
+        'agentCapabilities': <String, Object?>{
+          'loadSession': true,
+          'sessionCapabilities': <String, Object?>{
+            'delete': <String, Object?>{},
+          },
+        },
       });
 
       final result = await future;
       expect(result.protocolVersion, 1);
       expect(result.supportsLoadSession, isTrue);
+      expect(result.supportsSessionDelete, isTrue);
     });
   });
 
@@ -120,6 +126,25 @@ void main() {
       expect(sessions, hasLength(1));
       expect(sessions.single.title, 'First');
       expect(sessions.single.updatedAt, isNotNull);
+    });
+
+    test('deleteSession sends session/delete and forgets the handle', () async {
+      final (client, transport) = createClient();
+
+      final creating = client.newSession(cwd: '/tmp');
+      reply(transport, <String, Object?>{'sessionId': 's1'});
+      final session = await creating;
+      expect(client.session('s1'), same(session));
+
+      final deleting = client.deleteSession('s1');
+      expect(transport.lastSent['method'], 'session/delete');
+      expect(transport.lastSent['params'], <String, Object?>{
+        'sessionId': 's1',
+      });
+      reply(transport, const <String, Object?>{});
+      await deleting;
+
+      expect(client.session('s1'), isNull);
     });
 
     test(

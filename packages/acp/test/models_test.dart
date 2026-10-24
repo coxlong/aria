@@ -92,6 +92,7 @@ void main() {
       expect(result.protocolVersion, 1);
       expect(result.supportsLoadSession, isFalse);
       expect(result.supportsSessionList, isFalse);
+      expect(result.supportsSessionDelete, isFalse);
       expect(result.authMethods, isEmpty);
     });
 

@@ -6,6 +6,7 @@ abstract final class AcpMethods {
   static const String newSession = 'session/new';
   static const String loadSession = 'session/load';
   static const String listSessions = 'session/list';
+  static const String deleteSession = 'session/delete';
   static const String prompt = 'session/prompt';
   static const String cancel = 'session/cancel';
   static const String closeSession = 'session/close';

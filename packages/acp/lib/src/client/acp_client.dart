@@ -162,6 +162,18 @@ final class AcpClient {
         .toList(growable: false);
   }
 
+  /// Deletes a session from the agent's history.
+  ///
+  /// Gated by `agentCapabilities.sessionCapabilities.delete`; agents without
+  /// it may fail the request.
+  Future<void> deleteSession(String sessionId) async {
+    await _request(AcpMethods.deleteSession, <String, Object?>{
+      'sessionId': sessionId,
+    });
+    _sessions.remove(sessionId)?._dispose();
+    _permissionsBySession.remove(sessionId);
+  }
+
   /// Returns the registered session with [sessionId], if any.
   AcpSession? session(String sessionId) => _sessions[sessionId];
 
