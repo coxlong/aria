@@ -35,7 +35,6 @@ final class AriaApp extends StatelessWidget {
         listenable: settings,
         builder: (context, _) => MaterialApp(
           onGenerateTitle: (context) => AppLocalizations.of(context).appName,
-          debugShowCheckedModeBanner: false,
           locale: settings.locale,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
