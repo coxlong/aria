@@ -147,6 +147,69 @@ void main() {
       expect(client.session('s1'), isNull);
     });
 
+    test('releaseSession forgets the handle without waiting for the agent', () async {
+      final (client, transport) = createClient();
+
+      final creating = client.newSession(cwd: '/tmp');
+      reply(transport, <String, Object?>{'sessionId': 's1'});
+      final session = await creating;
+
+      await client.releaseSession('s1');
+
+      expect(client.session('s1'), isNull);
+      expect(session.isRunning, isFalse);
+      // The agent is told, but its answer is not part of the switch.
+      final methods = transport.sent
+          .map((line) => jsonDecode(line) as Map<String, Object?>)
+          .map((frame) => frame['method']!)
+          .whereType<String>();
+      expect(methods, contains('session/close'));
+
+      // A late update for the released session goes nowhere instead of growing
+      // a buffer nobody will ever read.
+      transport.emit(
+        updateFrame('s1', <String, Object?>{
+          'sessionUpdate': 'agent_message_chunk',
+          'content': <String, Object?>{'type': 'text', 'text': 'late'},
+        }),
+      );
+      expect(client.session('s1'), isNull);
+    });
+
+    test('releasing a session settles its in-flight prompt', () async {
+      final (client, transport) = createClient();
+
+      final creating = client.newSession(cwd: '/tmp');
+      reply(transport, <String, Object?>{'sessionId': 's1'});
+      final session = await creating;
+
+      final promptFuture = session.prompt('hello');
+      expect(session.isRunning, isTrue);
+
+      await client.releaseSession('s1');
+
+      final result = await promptFuture;
+      expect(result.stopReason, 'cancelled');
+      expect(session.isRunning, isFalse);
+    });
+
+    test('deleting a session settles its in-flight prompt', () async {
+      final (client, transport) = createClient();
+
+      final creating = client.newSession(cwd: '/tmp');
+      reply(transport, <String, Object?>{'sessionId': 's1'});
+      final session = await creating;
+
+      final promptFuture = session.prompt('hello');
+      final deleting = client.deleteSession('s1');
+      reply(transport, const <String, Object?>{});
+      await deleting;
+
+      final result = await promptFuture;
+      expect(result.stopReason, 'cancelled');
+      expect(session.isRunning, isFalse);
+    });
+
     test(
       'session/load buffers replay updates until the caller listens',
       () async {

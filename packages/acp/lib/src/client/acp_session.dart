@@ -226,6 +226,12 @@ final class AcpSession {
   void _dispose() {
     if (_disposed) return;
     _disposed = true;
+    // Every disposal path (close, delete, replace, release) must settle the
+    // in-flight prompt locally: the agent will not answer a request for a
+    // session this client no longer follows, and a prompt has no timeout.
+    final pendingPrompt = _promptRequestId;
+    _promptRequestId = null;
+    if (pendingPrompt != null) _client._abandon(pendingPrompt, 'cancelled');
     _running = false;
     _cancelWatchdog?.cancel();
     _cancelWatchdog = null;

@@ -174,6 +174,30 @@ final class AcpClient {
     _permissionsBySession.remove(sessionId);
   }
 
+  /// Drops a session the caller is no longer following, without deleting it.
+  ///
+  /// Local teardown is immediate — pending permissions are denied, an
+  /// in-flight prompt settles, and the update stream closes — while the agent
+  /// is told in the background. A client that switches sessions must call
+  /// this: a session left registered keeps buffering every update for it,
+  /// because its stream is single-subscription and nobody is listening.
+  Future<void> releaseSession(String sessionId) async {
+    final session = _sessions[sessionId];
+    if (session == null) return;
+    await _answerPermissionsFor(sessionId);
+    _forgetSession(session);
+    session._dispose();
+    unawaited(() async {
+      try {
+        await _notify(AcpMethods.closeSession, <String, Object?>{
+          'sessionId': sessionId,
+        });
+      } on Object {
+        // Best effort: the agent may already be gone.
+      }
+    }());
+  }
+
   /// Returns the registered session with [sessionId], if any.
   AcpSession? session(String sessionId) => _sessions[sessionId];
 
