@@ -1,5 +1,6 @@
 {
   "enabledPlugins": {
-    "dart-flutter@dart-flutter": true
+    "dart-flutter@dart-flutter": true,
+    "plannotator@plannotator": true
   }
 }
