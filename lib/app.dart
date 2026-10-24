@@ -1,62 +1,63 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_ui/material_ui.dart';
 
-import 'app_scope.dart';
-import 'features/chat/chat_page.dart';
-import 'features/connect/connect_page.dart';
+import 'core/theme/aria_theme.dart';
+import 'features/settings/application/settings_controller.dart';
 import 'l10n/app_localizations.dart';
-import 'state/connection_controller.dart';
-import 'state/conversation_controller.dart';
-import 'state/servers_controller.dart';
-import 'state/settings_controller.dart';
+import 'router/app_router.dart';
 
-/// Root widget: wires controllers, localization and the initial route.
-final class AriaApp extends StatelessWidget {
-  const AriaApp({
-    super.key,
-    required this.servers,
-    required this.settings,
-    required this.conversation,
-    required this.connection,
-  });
-
-  final ServersController servers;
-  final SettingsController settings;
-  final ConversationController conversation;
-  final ConnectionController connection;
+/// Root widget. The theme and the type scale are rebuilt when the language
+/// changes, because Chinese needs its own leading and tracking.
+class AriaApp extends ConsumerStatefulWidget {
+  const AriaApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return AppScope(
-      servers: servers,
-      settings: settings,
-      conversation: conversation,
-      connection: connection,
-      child: ListenableBuilder(
-        listenable: settings,
-        builder: (context, _) => MaterialApp(
-          onGenerateTitle: (context) => AppLocalizations.of(context).appName,
-          locale: settings.locale,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          theme: ThemeData(colorSchemeSeed: Colors.grey),
-          home: const ConnectionGate(),
-        ),
-      ),
-    );
-  }
+  ConsumerState<AriaApp> createState() => _AriaAppState();
 }
 
-/// Shows the chat while a session is live, the connect page otherwise.
-final class ConnectionGate extends StatelessWidget {
-  const ConnectionGate({super.key});
+class _AriaAppState extends ConsumerState<AriaApp> {
+  late Locale _systemLocale;
+
+  @override
+  void initState() {
+    super.initState();
+    _systemLocale = WidgetsBinding.instance.platformDispatcher.locale;
+    WidgetsBinding.instance.platformDispatcher.onLocaleChanged = () {
+      if (!mounted) return;
+      setState(() {
+        _systemLocale = WidgetsBinding.instance.platformDispatcher.locale;
+      });
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
-    final connection = AppScope.of(context).connection;
-    return ListenableBuilder(
-      listenable: connection,
-      builder: (context, _) =>
-          connection.session == null ? const ConnectPage() : const ChatPage(),
+    final router = ref.watch(appRouterProvider);
+    final settings = ref.watch(settingsProvider);
+
+    final override = switch (settings.locale) {
+      'en' => const Locale('en'),
+      'zh' => const Locale('zh'),
+      _ => null,
+    };
+    final chinese = (override ?? _systemLocale).languageCode == 'zh';
+
+    return MaterialApp.router(
+      onGenerateTitle: (context) => AppLocalizations.of(context).appName,
+      debugShowCheckedModeBanner: false,
+      routerConfig: router,
+      locale: override,
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: <LocalizationsDelegate<dynamic>>[
+        AppLocalizations.delegate,
+        // The plural value already carries the widget, Material and Cupertino
+        // delegates — and they all come from the decoupled packages, so the
+        // `package:flutter/material.dart` types never leak in.
+        ...GlobalMaterialLocalizations.delegates,
+      ],
+      theme: buildAriaTheme(brightness: Brightness.light, chinese: chinese),
+      darkTheme: buildAriaTheme(brightness: Brightness.dark, chinese: chinese),
+      themeMode: ThemeMode.system,
     );
   }
 }

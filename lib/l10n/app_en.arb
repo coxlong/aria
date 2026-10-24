@@ -1,94 +1,120 @@
 {
   "@@locale": "en",
   "appName": "Aria",
-  "connectTitle": "Connect to an agent",
-  "connectSubtitle": "Your duet with AI starts with a working connection.",
-  "connect": "Connect",
-  "addServer": "Add server",
-  "editServer": "Edit server",
-  "deleteServer": "Delete server",
-  "deleteServerConfirm": "Delete “{name}”? This cannot be undone.",
-  "@deleteServerConfirm": {
+  "composerHint": "What should Aria do?",
+  "send": "Send",
+  "stop": "Stop",
+  "untitled": "Untitled",
+  "back": "Back",
+  "minutesShort": "{count} min",
+  "@minutesShort": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "secondsShort": "{count} sec",
+  "@secondsShort": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "details": "Details",
+  "stepInput": "Input",
+  "stepOutput": "Output",
+  "moreWaiting": "{count, plural, =1{1 more decision is waiting} other{{count} more decisions are waiting}}",
+  "@moreWaiting": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "toolCall": "Tool call",
+  "reconnecting": "Reconnecting. Your draft is kept and Stop still works.",
+  "settings": "Settings",
+  "executorProfiles": "Executors",
+  "addExecutor": "Add executor",
+  "editExecutor": "Edit executor",
+  "deleteExecutor": "Delete executor",
+  "deleteExecutorConfirm": "Delete “{name}”? This cannot be undone.",
+  "@deleteExecutorConfirm": {
     "placeholders": {
       "name": {
         "type": "String"
       }
     }
   },
-  "serverName": "Name",
-  "serverUrl": "Agent URL",
-  "serverToken": "Access token (optional)",
-  "serverCwd": "Working directory",
-  "serverCwdHint": "/absolute/path/on/agent/host",
+  "executorName": "Name",
+  "executorUrl": "Agent URL",
+  "executorToken": "Access token (optional)",
+  "tokenUnchanged": "Leave blank to keep the saved token.",
+  "executorCwd": "Working directory",
+  "executorCwdHint": "/absolute/path/on/agent/host",
+  "executorUrlInvalid": "Enter a ws:// or wss:// URL.",
+  "requiredField": "Required",
   "save": "Save",
   "cancel": "Cancel",
   "delete": "Delete",
-  "noServersTitle": "No agents yet",
-  "noServersBody": "Add an ACP server to start a session.",
-  "newChat": "New chat",
-  "recentSessions": "Recent",
-  "noSessions": "No sessions yet",
-  "currentConnection": "Current connection",
-  "switchServer": "Switch server",
-  "composerHint": "Message the agent…",
-  "send": "Send",
-  "stop": "Stop",
-  "processRunning": "Running · {count, plural, =0{starting} =1{step 1} other{step {count}}}",
-  "@processRunning": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "processCompleted": "Completed · {count, plural, =1{1 step} other{{count} steps}}",
-  "@processCompleted": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "thinking": "Thinking",
-  "stepDetails": "Step details",
-  "permissionTitle": "Approve tool call",
-  "permissionHint": "The agent is waiting for your decision.",
-  "allowOnce": "Allow once",
-  "allowAlways": "Always allow",
-  "rejectOnce": "Reject",
-  "rejectAlways": "Always reject",
-  "permissionCancel": "Cancel",
-  "model": "Model",
-  "mode": "Mode",
-  "effort": "Reasoning effort",
-  "errorNetwork": "Cannot reach the agent. Check the URL, network and bridge.",
-  "errorAuth": "The agent rejected the token. Check the access token.",
-  "errorProtocol": "The connection is not speaking ACP v1.",
-  "errorTimeout": "The agent did not respond in time.",
-  "errorSessionLost": "The session is no longer available on the agent.",
-  "errorAgent": "The agent returned an error ({code}).",
-  "@errorAgent": {
+  "noExecutors": "No executor yet",
+  "noExecutorsBody": "Add an ACP endpoint to start.",
+  "language": "Language",
+  "languageSystem": "System",
+  "languageEnglish": "English",
+  "languageChinese": "简体中文",
+  "errorNetwork": "Cannot reach the agent. Check the URL and the connection.",
+  "errorAuth": "The agent rejected the token.",
+  "errorProtocol": "This endpoint is not speaking ACP v1.",
+  "errorRemote": "The agent returned an error ({code}).",
+  "@errorRemote": {
     "placeholders": {
       "code": {
         "type": "int"
       }
     }
   },
-  "errorGeneric": "Something went wrong.",
-  "reconnecting": "Reconnecting…",
-  "languageSystem": "System",
-  "languageEnglish": "English",
-  "languageChinese": "简体中文",
-  "emptyChatBody": "Send a message to start the duet.",
-  "sessionUntitled": "Untitled session",
+  "errorStorage": "Aria could not save locally. Your work is still on screen.",
+  "errorUnknown": "Something went wrong.",
+  "errorAgentStopped": "The agent stopped before finishing. Try again.",
+  "errorRefused": "The agent declined to continue. Rephrase the request or change the approach.",
+  "errorTruncated": "The answer hit the model's token limit and was cut off.",
   "retry": "Retry",
-  "close": "Close",
-  "settings": "Settings",
-  "requiredField": "Required",
-  "serverUrlInvalid": "Enter a ws:// or wss:// URL.",
+  "connectSubtitle": "Pick an executor to connect to.",
+  "connect": "Connect",
+  "connecting": "Connecting…",
+  "connected": "Connected",
+  "disconnected": "Disconnected",
+  "reconnectingShort": "Reconnecting",
+  "manageExecutors": "Manage executors",
+  "newChat": "New chat",
+  "sessions": "Recent",
+  "noSessions": "No sessions yet.",
+  "switchConnection": "Switch connection",
+  "signOut": "Sign out",
   "refresh": "Refresh",
-  "status": "Status",
-  "toolInput": "Input",
-  "toolOutput": "Output",
-  "deleteSession": "Delete conversation"
+  "model": "Model",
+  "mode": "Mode",
+  "effort": "Effort",
+  "processTitle": "Work",
+  "processEmpty": "Nothing was run.",
+  "thinkingProcess": "Thinking",
+  "processRunning": "Running · step {index}",
+  "@processRunning": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "processDone": "{count, plural, =1{1 step} other{{count} steps}}",
+  "@processDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

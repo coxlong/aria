@@ -13,42 +13,93 @@ class AppLocalizationsZh extends AppLocalizations {
   String get appName => 'Aria';
 
   @override
-  String get connectTitle => '连接一个 agent';
+  String get composerHint => '想让 Aria 做什么？';
 
   @override
-  String get connectSubtitle => '和 AI 的二重奏，从一次顺畅的连接开始。';
+  String get send => '发送';
 
   @override
-  String get connect => '连接';
+  String get stop => '停止';
 
   @override
-  String get addServer => '添加连接';
+  String get untitled => '未命名';
 
   @override
-  String get editServer => '编辑连接';
+  String get back => '返回';
 
   @override
-  String get deleteServer => '删除连接';
-
-  @override
-  String deleteServerConfirm(String name) {
-    return '确定删除「$name」吗？此操作不可撤销。';
+  String minutesShort(int count) {
+    return '$count 分钟';
   }
 
   @override
-  String get serverName => '名称';
+  String secondsShort(int count) {
+    return '$count 秒';
+  }
 
   @override
-  String get serverUrl => 'Agent 地址';
+  String get details => '详情';
 
   @override
-  String get serverToken => '访问令牌（可选）';
+  String get stepInput => '输入';
 
   @override
-  String get serverCwd => '工作目录';
+  String get stepOutput => '输出';
 
   @override
-  String get serverCwdHint => '/agent 主机上的绝对路径';
+  String moreWaiting(int count) {
+    return '$count 个决定在排队';
+  }
+
+  @override
+  String get toolCall => '工具调用';
+
+  @override
+  String get reconnecting => '正在重新连接。草稿已保留，停止键仍然可用。';
+
+  @override
+  String get settings => '设置';
+
+  @override
+  String get executorProfiles => '执行端';
+
+  @override
+  String get addExecutor => '添加执行端';
+
+  @override
+  String get editExecutor => '编辑执行端';
+
+  @override
+  String get deleteExecutor => '删除执行端';
+
+  @override
+  String deleteExecutorConfirm(String name) {
+    return '删除「$name」？此操作不可撤销。';
+  }
+
+  @override
+  String get executorName => '名称';
+
+  @override
+  String get executorUrl => 'Agent 地址';
+
+  @override
+  String get executorToken => '访问令牌（可选）';
+
+  @override
+  String get tokenUnchanged => '留空则保留已保存的令牌。';
+
+  @override
+  String get executorCwd => '工作目录';
+
+  @override
+  String get executorCwdHint => 'Agent 主机上的绝对路径';
+
+  @override
+  String get executorUrlInvalid => '请输入 ws:// 或 wss:// 地址。';
+
+  @override
+  String get requiredField => '必填';
 
   @override
   String get save => '保存';
@@ -60,119 +111,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get delete => '删除';
 
   @override
-  String get noServersTitle => '还没有 agent';
+  String get noExecutors => '还没有执行端';
 
   @override
-  String get noServersBody => '添加一个 ACP 服务端来开始会话。';
+  String get noExecutorsBody => '添加一个 ACP 端点即可开始。';
 
   @override
-  String get newChat => '新对话';
-
-  @override
-  String get recentSessions => '最近';
-
-  @override
-  String get noSessions => '还没有会话';
-
-  @override
-  String get currentConnection => '当前连接';
-
-  @override
-  String get switchServer => '切换连接';
-
-  @override
-  String get composerHint => '给 agent 发消息…';
-
-  @override
-  String get send => '发送';
-
-  @override
-  String get stop => '停止';
-
-  @override
-  String processRunning(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '第 $count 步',
-      one: '第 1 步',
-      zero: '准备中',
-    );
-    return '执行中 · $_temp0';
-  }
-
-  @override
-  String processCompleted(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count 步',
-      one: '1 步',
-    );
-    return '已完成 · $_temp0';
-  }
-
-  @override
-  String get thinking => '思考过程';
-
-  @override
-  String get stepDetails => '步骤详情';
-
-  @override
-  String get permissionTitle => '审批工具调用';
-
-  @override
-  String get permissionHint => 'agent 正在等待你的决定。';
-
-  @override
-  String get allowOnce => '允许一次';
-
-  @override
-  String get allowAlways => '始终允许';
-
-  @override
-  String get rejectOnce => '拒绝';
-
-  @override
-  String get rejectAlways => '始终拒绝';
-
-  @override
-  String get permissionCancel => '取消';
-
-  @override
-  String get model => '模型';
-
-  @override
-  String get mode => '模式';
-
-  @override
-  String get effort => '推理强度';
-
-  @override
-  String get errorNetwork => '无法连接到 agent，请检查地址、网络和 bridge。';
-
-  @override
-  String get errorAuth => 'agent 拒绝了令牌，请检查访问令牌。';
-
-  @override
-  String get errorProtocol => '该连接不是 ACP v1 协议。';
-
-  @override
-  String get errorTimeout => 'agent 响应超时。';
-
-  @override
-  String get errorSessionLost => '该会话在 agent 上已不可用。';
-
-  @override
-  String errorAgent(int code) {
-    return 'agent 返回了错误（$code）。';
-  }
-
-  @override
-  String get errorGeneric => '出了点问题。';
-
-  @override
-  String get reconnecting => '正在重连…';
+  String get language => '语言';
 
   @override
   String get languageSystem => '跟随系统';
@@ -184,38 +129,101 @@ class AppLocalizationsZh extends AppLocalizations {
   String get languageChinese => '简体中文';
 
   @override
-  String get emptyChatBody => '发一条消息，开始你们的二重奏。';
+  String get errorNetwork => '连不上这个执行端。检查地址与网络。';
 
   @override
-  String get sessionUntitled => '未命名会话';
+  String get errorAuth => '执行端拒绝了令牌。';
+
+  @override
+  String get errorProtocol => '这个端点不是在说 ACP v1。';
+
+  @override
+  String errorRemote(int code) {
+    return '执行端返回了错误（$code）。';
+  }
+
+  @override
+  String get errorStorage => '本地保存失败，不过内容还在屏幕上。';
+
+  @override
+  String get errorUnknown => '出了点问题。';
+
+  @override
+  String get errorAgentStopped => '执行端没做完就停下了，请重试。';
+
+  @override
+  String get errorRefused => '执行端拒绝继续，换个说法或调整做法。';
+
+  @override
+  String get errorTruncated => '回答达到模型的 token 上限，被截断了。';
 
   @override
   String get retry => '重试';
 
   @override
-  String get close => '关闭';
+  String get connectSubtitle => '选择一个执行端连接。';
 
   @override
-  String get settings => '设置';
+  String get connect => '连接';
 
   @override
-  String get requiredField => '必填';
+  String get connecting => '连接中…';
 
   @override
-  String get serverUrlInvalid => '请输入 ws:// 或 wss:// 地址。';
+  String get connected => '已连接';
+
+  @override
+  String get disconnected => '已断开';
+
+  @override
+  String get reconnectingShort => '重连中';
+
+  @override
+  String get manageExecutors => '管理执行端';
+
+  @override
+  String get newChat => '新对话';
+
+  @override
+  String get sessions => '最近';
+
+  @override
+  String get noSessions => '还没有会话。';
+
+  @override
+  String get switchConnection => '切换连接';
+
+  @override
+  String get signOut => '退出';
 
   @override
   String get refresh => '刷新';
 
   @override
-  String get status => '状态';
+  String get model => '模型';
 
   @override
-  String get toolInput => '输入';
+  String get mode => '模式';
 
   @override
-  String get toolOutput => '输出';
+  String get effort => '推理强度';
 
   @override
-  String get deleteSession => '删除对话';
+  String get processTitle => '执行过程';
+
+  @override
+  String get processEmpty => '没有执行过程。';
+
+  @override
+  String get thinkingProcess => '思考过程';
+
+  @override
+  String processRunning(int index) {
+    return '执行中 · 第 $index 步';
+  }
+
+  @override
+  String processDone(int count) {
+    return '已完成 · $count 步';
+  }
 }

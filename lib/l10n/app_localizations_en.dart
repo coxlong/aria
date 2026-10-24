@@ -13,43 +13,100 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appName => 'Aria';
 
   @override
-  String get connectTitle => 'Connect to an agent';
+  String get composerHint => 'What should Aria do?';
 
   @override
-  String get connectSubtitle =>
-      'Your duet with AI starts with a working connection.';
+  String get send => 'Send';
 
   @override
-  String get connect => 'Connect';
+  String get stop => 'Stop';
 
   @override
-  String get addServer => 'Add server';
+  String get untitled => 'Untitled';
 
   @override
-  String get editServer => 'Edit server';
+  String get back => 'Back';
 
   @override
-  String get deleteServer => 'Delete server';
+  String minutesShort(int count) {
+    return '$count min';
+  }
 
   @override
-  String deleteServerConfirm(String name) {
+  String secondsShort(int count) {
+    return '$count sec';
+  }
+
+  @override
+  String get details => 'Details';
+
+  @override
+  String get stepInput => 'Input';
+
+  @override
+  String get stepOutput => 'Output';
+
+  @override
+  String moreWaiting(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count more decisions are waiting',
+      one: '1 more decision is waiting',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get toolCall => 'Tool call';
+
+  @override
+  String get reconnecting =>
+      'Reconnecting. Your draft is kept and Stop still works.';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get executorProfiles => 'Executors';
+
+  @override
+  String get addExecutor => 'Add executor';
+
+  @override
+  String get editExecutor => 'Edit executor';
+
+  @override
+  String get deleteExecutor => 'Delete executor';
+
+  @override
+  String deleteExecutorConfirm(String name) {
     return 'Delete “$name”? This cannot be undone.';
   }
 
   @override
-  String get serverName => 'Name';
+  String get executorName => 'Name';
 
   @override
-  String get serverUrl => 'Agent URL';
+  String get executorUrl => 'Agent URL';
 
   @override
-  String get serverToken => 'Access token (optional)';
+  String get executorToken => 'Access token (optional)';
 
   @override
-  String get serverCwd => 'Working directory';
+  String get tokenUnchanged => 'Leave blank to keep the saved token.';
 
   @override
-  String get serverCwdHint => '/absolute/path/on/agent/host';
+  String get executorCwd => 'Working directory';
+
+  @override
+  String get executorCwdHint => '/absolute/path/on/agent/host';
+
+  @override
+  String get executorUrlInvalid => 'Enter a ws:// or wss:// URL.';
+
+  @override
+  String get requiredField => 'Required';
 
   @override
   String get save => 'Save';
@@ -61,122 +118,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get delete => 'Delete';
 
   @override
-  String get noServersTitle => 'No agents yet';
+  String get noExecutors => 'No executor yet';
 
   @override
-  String get noServersBody => 'Add an ACP server to start a session.';
+  String get noExecutorsBody => 'Add an ACP endpoint to start.';
 
   @override
-  String get newChat => 'New chat';
-
-  @override
-  String get recentSessions => 'Recent';
-
-  @override
-  String get noSessions => 'No sessions yet';
-
-  @override
-  String get currentConnection => 'Current connection';
-
-  @override
-  String get switchServer => 'Switch server';
-
-  @override
-  String get composerHint => 'Message the agent…';
-
-  @override
-  String get send => 'Send';
-
-  @override
-  String get stop => 'Stop';
-
-  @override
-  String processRunning(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'step $count',
-      one: 'step 1',
-      zero: 'starting',
-    );
-    return 'Running · $_temp0';
-  }
-
-  @override
-  String processCompleted(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count steps',
-      one: '1 step',
-    );
-    return 'Completed · $_temp0';
-  }
-
-  @override
-  String get thinking => 'Thinking';
-
-  @override
-  String get stepDetails => 'Step details';
-
-  @override
-  String get permissionTitle => 'Approve tool call';
-
-  @override
-  String get permissionHint => 'The agent is waiting for your decision.';
-
-  @override
-  String get allowOnce => 'Allow once';
-
-  @override
-  String get allowAlways => 'Always allow';
-
-  @override
-  String get rejectOnce => 'Reject';
-
-  @override
-  String get rejectAlways => 'Always reject';
-
-  @override
-  String get permissionCancel => 'Cancel';
-
-  @override
-  String get model => 'Model';
-
-  @override
-  String get mode => 'Mode';
-
-  @override
-  String get effort => 'Reasoning effort';
-
-  @override
-  String get errorNetwork =>
-      'Cannot reach the agent. Check the URL, network and bridge.';
-
-  @override
-  String get errorAuth =>
-      'The agent rejected the token. Check the access token.';
-
-  @override
-  String get errorProtocol => 'The connection is not speaking ACP v1.';
-
-  @override
-  String get errorTimeout => 'The agent did not respond in time.';
-
-  @override
-  String get errorSessionLost =>
-      'The session is no longer available on the agent.';
-
-  @override
-  String errorAgent(int code) {
-    return 'The agent returned an error ($code).';
-  }
-
-  @override
-  String get errorGeneric => 'Something went wrong.';
-
-  @override
-  String get reconnecting => 'Reconnecting…';
+  String get language => 'Language';
 
   @override
   String get languageSystem => 'System';
@@ -188,38 +136,112 @@ class AppLocalizationsEn extends AppLocalizations {
   String get languageChinese => '简体中文';
 
   @override
-  String get emptyChatBody => 'Send a message to start the duet.';
+  String get errorNetwork =>
+      'Cannot reach the agent. Check the URL and the connection.';
 
   @override
-  String get sessionUntitled => 'Untitled session';
+  String get errorAuth => 'The agent rejected the token.';
+
+  @override
+  String get errorProtocol => 'This endpoint is not speaking ACP v1.';
+
+  @override
+  String errorRemote(int code) {
+    return 'The agent returned an error ($code).';
+  }
+
+  @override
+  String get errorStorage =>
+      'Aria could not save locally. Your work is still on screen.';
+
+  @override
+  String get errorUnknown => 'Something went wrong.';
+
+  @override
+  String get errorAgentStopped =>
+      'The agent stopped before finishing. Try again.';
+
+  @override
+  String get errorRefused =>
+      'The agent declined to continue. Rephrase the request or change the approach.';
+
+  @override
+  String get errorTruncated =>
+      'The answer hit the model\'s token limit and was cut off.';
 
   @override
   String get retry => 'Retry';
 
   @override
-  String get close => 'Close';
+  String get connectSubtitle => 'Pick an executor to connect to.';
 
   @override
-  String get settings => 'Settings';
+  String get connect => 'Connect';
 
   @override
-  String get requiredField => 'Required';
+  String get connecting => 'Connecting…';
 
   @override
-  String get serverUrlInvalid => 'Enter a ws:// or wss:// URL.';
+  String get connected => 'Connected';
+
+  @override
+  String get disconnected => 'Disconnected';
+
+  @override
+  String get reconnectingShort => 'Reconnecting';
+
+  @override
+  String get manageExecutors => 'Manage executors';
+
+  @override
+  String get newChat => 'New chat';
+
+  @override
+  String get sessions => 'Recent';
+
+  @override
+  String get noSessions => 'No sessions yet.';
+
+  @override
+  String get switchConnection => 'Switch connection';
+
+  @override
+  String get signOut => 'Sign out';
 
   @override
   String get refresh => 'Refresh';
 
   @override
-  String get status => 'Status';
+  String get model => 'Model';
 
   @override
-  String get toolInput => 'Input';
+  String get mode => 'Mode';
 
   @override
-  String get toolOutput => 'Output';
+  String get effort => 'Effort';
 
   @override
-  String get deleteSession => 'Delete conversation';
+  String get processTitle => 'Work';
+
+  @override
+  String get processEmpty => 'Nothing was run.';
+
+  @override
+  String get thinkingProcess => 'Thinking';
+
+  @override
+  String processRunning(int index) {
+    return 'Running · step $index';
+  }
+
+  @override
+  String processDone(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count steps',
+      one: '1 step',
+    );
+    return '$_temp0';
+  }
 }

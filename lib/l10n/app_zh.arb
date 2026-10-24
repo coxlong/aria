@@ -1,94 +1,120 @@
 {
   "@@locale": "zh",
   "appName": "Aria",
-  "connectTitle": "连接一个 agent",
-  "connectSubtitle": "和 AI 的二重奏，从一次顺畅的连接开始。",
-  "connect": "连接",
-  "addServer": "添加连接",
-  "editServer": "编辑连接",
-  "deleteServer": "删除连接",
-  "deleteServerConfirm": "确定删除「{name}」吗？此操作不可撤销。",
-  "@deleteServerConfirm": {
+  "composerHint": "想让 Aria 做什么？",
+  "send": "发送",
+  "stop": "停止",
+  "untitled": "未命名",
+  "back": "返回",
+  "minutesShort": "{count} 分钟",
+  "@minutesShort": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "secondsShort": "{count} 秒",
+  "@secondsShort": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "details": "详情",
+  "stepInput": "输入",
+  "stepOutput": "输出",
+  "moreWaiting": "{count} 个决定在排队",
+  "@moreWaiting": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "toolCall": "工具调用",
+  "reconnecting": "正在重新连接。草稿已保留，停止键仍然可用。",
+  "settings": "设置",
+  "executorProfiles": "执行端",
+  "addExecutor": "添加执行端",
+  "editExecutor": "编辑执行端",
+  "deleteExecutor": "删除执行端",
+  "deleteExecutorConfirm": "删除「{name}」？此操作不可撤销。",
+  "@deleteExecutorConfirm": {
     "placeholders": {
       "name": {
         "type": "String"
       }
     }
   },
-  "serverName": "名称",
-  "serverUrl": "Agent 地址",
-  "serverToken": "访问令牌（可选）",
-  "serverCwd": "工作目录",
-  "serverCwdHint": "/agent 主机上的绝对路径",
+  "executorName": "名称",
+  "executorUrl": "Agent 地址",
+  "executorToken": "访问令牌（可选）",
+  "tokenUnchanged": "留空则保留已保存的令牌。",
+  "executorCwd": "工作目录",
+  "executorCwdHint": "Agent 主机上的绝对路径",
+  "executorUrlInvalid": "请输入 ws:// 或 wss:// 地址。",
+  "requiredField": "必填",
   "save": "保存",
   "cancel": "取消",
   "delete": "删除",
-  "noServersTitle": "还没有 agent",
-  "noServersBody": "添加一个 ACP 服务端来开始会话。",
-  "newChat": "新对话",
-  "recentSessions": "最近",
-  "noSessions": "还没有会话",
-  "currentConnection": "当前连接",
-  "switchServer": "切换连接",
-  "composerHint": "给 agent 发消息…",
-  "send": "发送",
-  "stop": "停止",
-  "processRunning": "执行中 · {count, plural, =0{准备中} =1{第 1 步} other{第 {count} 步}}",
-  "@processRunning": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "processCompleted": "已完成 · {count, plural, =1{1 步} other{{count} 步}}",
-  "@processCompleted": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "thinking": "思考过程",
-  "stepDetails": "步骤详情",
-  "permissionTitle": "审批工具调用",
-  "permissionHint": "agent 正在等待你的决定。",
-  "allowOnce": "允许一次",
-  "allowAlways": "始终允许",
-  "rejectOnce": "拒绝",
-  "rejectAlways": "始终拒绝",
-  "permissionCancel": "取消",
-  "model": "模型",
-  "mode": "模式",
-  "effort": "推理强度",
-  "errorNetwork": "无法连接到 agent，请检查地址、网络和 bridge。",
-  "errorAuth": "agent 拒绝了令牌，请检查访问令牌。",
-  "errorProtocol": "该连接不是 ACP v1 协议。",
-  "errorTimeout": "agent 响应超时。",
-  "errorSessionLost": "该会话在 agent 上已不可用。",
-  "errorAgent": "agent 返回了错误（{code}）。",
-  "@errorAgent": {
+  "noExecutors": "还没有执行端",
+  "noExecutorsBody": "添加一个 ACP 端点即可开始。",
+  "language": "语言",
+  "languageSystem": "跟随系统",
+  "languageEnglish": "English",
+  "languageChinese": "简体中文",
+  "errorNetwork": "连不上这个执行端。检查地址与网络。",
+  "errorAuth": "执行端拒绝了令牌。",
+  "errorProtocol": "这个端点不是在说 ACP v1。",
+  "errorRemote": "执行端返回了错误（{code}）。",
+  "@errorRemote": {
     "placeholders": {
       "code": {
         "type": "int"
       }
     }
   },
-  "errorGeneric": "出了点问题。",
-  "reconnecting": "正在重连…",
-  "languageSystem": "跟随系统",
-  "languageEnglish": "English",
-  "languageChinese": "简体中文",
-  "emptyChatBody": "发一条消息，开始你们的二重奏。",
-  "sessionUntitled": "未命名会话",
+  "errorStorage": "本地保存失败，不过内容还在屏幕上。",
+  "errorUnknown": "出了点问题。",
+  "errorAgentStopped": "执行端没做完就停下了，请重试。",
+  "errorRefused": "执行端拒绝继续，换个说法或调整做法。",
+  "errorTruncated": "回答达到模型的 token 上限，被截断了。",
   "retry": "重试",
-  "close": "关闭",
-  "settings": "设置",
-  "requiredField": "必填",
-  "serverUrlInvalid": "请输入 ws:// 或 wss:// 地址。",
+  "connectSubtitle": "选择一个执行端连接。",
+  "connect": "连接",
+  "connecting": "连接中…",
+  "connected": "已连接",
+  "disconnected": "已断开",
+  "reconnectingShort": "重连中",
+  "manageExecutors": "管理执行端",
+  "newChat": "新对话",
+  "sessions": "最近",
+  "noSessions": "还没有会话。",
+  "switchConnection": "切换连接",
+  "signOut": "退出",
   "refresh": "刷新",
-  "status": "状态",
-  "toolInput": "输入",
-  "toolOutput": "输出",
-  "deleteSession": "删除对话"
+  "model": "模型",
+  "mode": "模式",
+  "effort": "推理强度",
+  "processTitle": "执行过程",
+  "processEmpty": "没有执行过程。",
+  "thinkingProcess": "思考过程",
+  "processRunning": "执行中 · 第 {index} 步",
+  "@processRunning": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "processDone": "已完成 · {count} 步",
+  "@processDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

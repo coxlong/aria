@@ -1,32 +1,24 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app.dart';
-import 'core/persistence/server_store.dart';
-import 'state/connection_controller.dart';
-import 'state/conversation_controller.dart';
-import 'state/servers_controller.dart';
-import 'state/settings_controller.dart';
+import 'core/providers.dart';
+import 'core/storage/preferences.dart';
 
+/// Everything the first frame needs is loaded before `runApp`; nothing on the
+/// first screen waits on the network.
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  const store = ServerStore();
-  final servers = ServersController(store);
-  final settings = SettingsController(store);
-  final conversation = ConversationController();
-  final connection = ConnectionController(
-    conversation: conversation,
-    store: store,
-  );
-
-  await Future.wait([servers.load(), settings.load()]);
+  final shared = await SharedPreferences.getInstance();
 
   runApp(
-    AriaApp(
-      servers: servers,
-      settings: settings,
-      conversation: conversation,
-      connection: connection,
+    ProviderScope(
+      overrides: [
+        preferencesProvider.overrideWithValue(AriaPreferences(shared)),
+      ],
+      child: const AriaApp(),
     ),
   );
 }
