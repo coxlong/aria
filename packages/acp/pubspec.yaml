@@ -1,0 +1,13 @@
+name: acp
+description: Hand-written Agent Client Protocol (ACP) client library for Dart.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ^3.13.0
+
+dev_dependencies:
+  coverage: ^1.15.0
+  crypto: ^3.0.6
+  lints: ^6.0.0
+  test: ^1.25.0
