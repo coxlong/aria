@@ -56,7 +56,8 @@ void main() {
       ),
     );
 
-    expect(find.text('Model'), findsNothing);
+    // Collapsed rows stay mounted but take no space and accept no input.
+    expect(find.text('Model').hitTestable(), findsNothing);
     // The send action sits beside the field instead of on a row below it.
     final field = tester.getRect(find.byType(TextField));
     final send = tester.getRect(find.byIcon(Icons.arrow_upward_rounded));
@@ -65,8 +66,10 @@ void main() {
 
     tester.view.viewInsets = const FakeViewPadding(bottom: 300);
     await tester.pump();
+    // The options row grows in rather than snapping into place.
+    await tester.pump(const Duration(milliseconds: 250));
 
-    expect(find.text('Model'), findsOneWidget);
+    expect(find.text('Model').hitTestable(), findsOneWidget);
     expect(
       tester.getSize(find.byType(AriaComposer)).height,
       greaterThan(compactHeight),
@@ -75,8 +78,9 @@ void main() {
     // Dismissing the keyboard puts the composer back on one row.
     tester.view.viewInsets = FakeViewPadding.zero;
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 250));
 
-    expect(find.text('Model'), findsNothing);
+    expect(find.text('Model').hitTestable(), findsNothing);
     expect(tester.getSize(find.byType(AriaComposer)).height, compactHeight);
   }, variant: TargetPlatformVariant.only(TargetPlatform.iOS));
 

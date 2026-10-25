@@ -179,22 +179,51 @@ class _AriaComposerState extends State<AriaComposer>
                     ),
                   ),
                 ),
-                if (compact) action,
+                // On a phone the action stays beside the field in both
+                // shapes, so opening the keyboard only grows the options row
+                // instead of also moving the button.
+                if (mobile) action,
               ],
             ),
-            if (!compact) ...<Widget>[
-              const SizedBox(height: AriaSpacing.xxs),
-              Row(
+            // The row stays in the tree and animates its own height, so the
+            // chips fade and slide shut instead of vanishing on the frame the
+            // keyboard appears. Swapping in an empty box would animate only
+            // the gap they leave behind.
+            TweenAnimationBuilder<double>(
+              tween: Tween<double>(end: compact ? 0 : 1),
+              duration: AriaMotion.resolve(context, AriaMotion.local),
+              curve: AriaMotion.entering,
+              builder: (context, factor, child) => ClipRect(
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  heightFactor: factor,
+                  child: IgnorePointer(
+                    ignoring: compact,
+                    child: ExcludeSemantics(
+                      excluding: compact,
+                      child: Opacity(opacity: factor, child: child),
+                    ),
+                  ),
+                ),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  for (final chip in widget.chips) ...<Widget>[
-                    chip,
-                    const SizedBox(width: AriaSpacing.xs),
-                  ],
-                  const Spacer(),
-                  action,
+                  const SizedBox(height: AriaSpacing.xxs),
+                  Row(
+                    children: <Widget>[
+                      for (final chip in widget.chips) ...<Widget>[
+                        chip,
+                        const SizedBox(width: AriaSpacing.xs),
+                      ],
+                      if (!mobile) const Spacer(),
+                      if (!mobile) action,
+                    ],
+                  ),
                 ],
               ),
-            ],
+            ),
           ],
         ),
       ),
