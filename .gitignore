@@ -40,6 +40,7 @@ app.*.symbols
 app.*.map.json
 
 # Local ACP package artifacts
+/packages/acp/build/
 /packages/acp/coverage/
 /packages/acp/pubspec.lock
 
