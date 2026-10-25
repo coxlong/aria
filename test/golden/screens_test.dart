@@ -16,6 +16,7 @@ import 'package:aria/features/chat/application/chat_view.dart';
 import 'package:aria/features/chat/presentation/widgets/message_list.dart';
 import 'package:aria/features/connect/presentation/connect_page.dart';
 import 'package:aria/l10n/app_localizations.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -109,6 +110,9 @@ void main() {
   });
 
   testWidgets('chat', (tester) async {
+    // A desktop-sized shot, so the composer shows its options even though the
+    // test binding would otherwise default to a phone platform.
+    debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
     sizeTo(tester, const Size(1200, 800));
 
     final now = DateTime(2026, 10, 24, 9, 30);
@@ -210,6 +214,7 @@ void main() {
     // binding does not complain about it after the test.
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pump(const Duration(seconds: 1));
+    debugDefaultTargetPlatformOverride = null;
   });
 }
 

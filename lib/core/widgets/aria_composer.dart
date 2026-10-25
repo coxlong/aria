@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -38,14 +39,17 @@ class AriaComposer extends StatefulWidget {
   final bool autofocus;
   final String? initialText;
 
-  /// Configuration for this session, shown beside the send action.
+  /// Configuration for this session, shown beside the send action. On a phone
+  /// they only appear while the keyboard is open, so the composer can keep to
+  /// one row the rest of the time.
   final List<Widget> chips;
 
   @override
   State<AriaComposer> createState() => _AriaComposerState();
 }
 
-class _AriaComposerState extends State<AriaComposer> {
+class _AriaComposerState extends State<AriaComposer>
+    with WidgetsBindingObserver {
   late final TextEditingController _controller = TextEditingController(
     text: widget.initialText,
   );
@@ -54,16 +58,24 @@ class _AriaComposerState extends State<AriaComposer> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _controller.addListener(_onChanged);
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _controller.removeListener(_onChanged);
     _controller.dispose();
     _focus.dispose();
     super.dispose();
   }
+
+  /// The keyboard is only visible through the view's insets, and those are not
+  /// an inherited widget the composer could depend on. Rebuild on any metrics
+  /// change and read the current inset in [build].
+  @override
+  void didChangeMetrics() => setState(() {});
 
   void _onChanged() => setState(() {});
 
@@ -96,6 +108,28 @@ class _AriaComposerState extends State<AriaComposer> {
     final colors = context.ariaColors;
     final type = context.ariaType;
 
+    // On a phone the composer competes with the keyboard for height. While the
+    // keyboard is away it stays on one row; the option chips come back once the
+    // person is actually typing. Desktop never reports a soft-keyboard inset,
+    // so its options stay visible.
+    //
+    // A Scaffold between this field and the app removes the keyboard inset
+    // from the MediaQuery its body sees, so the view itself is the only
+    // reliable source here.
+    final mobile = switch (defaultTargetPlatform) {
+      TargetPlatform.android || TargetPlatform.iOS => true,
+      _ => false,
+    };
+    final keyboardOpen = View.of(context).viewInsets.bottom > 0;
+    final compact = mobile && !keyboardOpen;
+
+    final action = _ComposerAction(
+      running: widget.running,
+      enabled: _canSend,
+      onSend: () => unawaited(_submit()),
+      onStop: widget.onStop,
+    );
+
     return ConstrainedBox(
       constraints: const BoxConstraints(minHeight: 56),
       child: Container(
@@ -114,49 +148,53 @@ class _AriaComposerState extends State<AriaComposer> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Focus(
-              onKeyEvent: _onKey,
-              child: TextField(
-                controller: _controller,
-                focusNode: _focus,
-                autofocus: widget.autofocus,
-                enabled: widget.enabled,
-                minLines: 1,
-                maxLines: 5,
-                textInputAction: TextInputAction.newline,
-                keyboardType: TextInputType.multiline,
-                style: type.body.copyWith(color: colors.text),
-                cursorColor: colors.primary,
-                decoration: InputDecoration(
-                  isDense: true,
-                  filled: false,
-                  border: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: AriaSpacing.xs,
-                  ),
-                  hintText: widget.hint,
-                  hintStyle: type.body.copyWith(color: colors.textMuted),
-                ),
-              ),
-            ),
-            const SizedBox(height: AriaSpacing.xxs),
             Row(
               children: <Widget>[
-                for (final chip in widget.chips) ...<Widget>[
-                  chip,
-                  const SizedBox(width: AriaSpacing.xs),
-                ],
-                const Spacer(),
-                _ComposerAction(
-                  running: widget.running,
-                  enabled: _canSend,
-                  onSend: () => unawaited(_submit()),
-                  onStop: widget.onStop,
+                Expanded(
+                  child: Focus(
+                    onKeyEvent: _onKey,
+                    child: TextField(
+                      controller: _controller,
+                      focusNode: _focus,
+                      autofocus: widget.autofocus,
+                      enabled: widget.enabled,
+                      minLines: 1,
+                      maxLines: 5,
+                      textInputAction: TextInputAction.newline,
+                      keyboardType: TextInputType.multiline,
+                      style: type.body.copyWith(color: colors.text),
+                      cursorColor: colors.primary,
+                      decoration: InputDecoration(
+                        isDense: true,
+                        filled: false,
+                        border: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: AriaSpacing.xs,
+                        ),
+                        hintText: widget.hint,
+                        hintStyle: type.body.copyWith(color: colors.textMuted),
+                      ),
+                    ),
+                  ),
                 ),
+                if (compact) action,
               ],
             ),
+            if (!compact) ...<Widget>[
+              const SizedBox(height: AriaSpacing.xxs),
+              Row(
+                children: <Widget>[
+                  for (final chip in widget.chips) ...<Widget>[
+                    chip,
+                    const SizedBox(width: AriaSpacing.xs),
+                  ],
+                  const Spacer(),
+                  action,
+                ],
+              ),
+            ],
           ],
         ),
       ),
