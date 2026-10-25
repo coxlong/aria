@@ -9,6 +9,7 @@ import '../../../../domain/chat/work_step.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../application/chat_view.dart';
 import 'process_sheet.dart';
+import 'step_icon.dart';
 
 /// The conversation is a record, not a control panel: exactly one stream, in
 /// chronological order.
@@ -221,10 +222,10 @@ class ProcessPill extends StatelessWidget {
             children: <Widget>[
               Icon(
                 running != null
-                    ? _iconOf(running)
+                    ? iconForTool(running)
                     : (tools.isEmpty
                           ? Icons.psychology_alt_outlined
-                          : _iconOf(tools.last)),
+                          : iconForTool(tools.last)),
                 size: 16,
                 color: color,
               ),
@@ -243,16 +244,5 @@ class ProcessPill extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  static IconData _iconOf(WorkStep step) {
-    final title = step.title.toLowerCase();
-    if (title.contains('bash') || title.contains('command')) {
-      return Icons.terminal_rounded;
-    }
-    if (title.contains('read')) return Icons.visibility_outlined;
-    if (title.contains('write')) return Icons.note_add_outlined;
-    if (title.contains('edit')) return Icons.edit_outlined;
-    return Icons.build_outlined;
   }
 }

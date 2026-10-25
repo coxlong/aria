@@ -8,6 +8,7 @@ import '../../../../core/widgets/aria_markdown.dart';
 import '../../../../domain/chat/chat_turn.dart';
 import '../../../../domain/chat/work_step.dart';
 import '../../../../l10n/app_localizations.dart';
+import 'step_icon.dart';
 
 /// Shows what the agent did during one turn.
 ///
@@ -102,7 +103,8 @@ class _ProcessSheetState extends State<_ProcessSheet> {
                     return switch (block) {
                       ToolBlock(:final step) => _StepRow(
                         title: _titleOf(step, l10n),
-                        step: step,
+                        icon: iconForTool(step),
+                        status: step.status,
                         onTap: () => setState(
                           () => _selected = _StepSelection(
                             _titleOf(step, l10n),
@@ -110,12 +112,15 @@ class _ProcessSheetState extends State<_ProcessSheet> {
                           ),
                         ),
                       ),
+                      // Reasoning is worth reading in the list itself: a row
+                      // of identical "Thinking" labels says nothing about
+                      // what was actually considered.
                       ThoughtBlock(:final text) => _StepRow(
-                        title: l10n.thinkingProcess,
-                        step: null,
+                        title: _previewOf(text, l10n.thinkingProcess),
+                        icon: iconForBlock(block),
                         onTap: () => setState(
                           () => _selected = _TextSelection(
-                            l10n.thinkingProcess,
+                            _previewOf(text, l10n.thinkingProcess),
                             text,
                           ),
                         ),
@@ -125,7 +130,7 @@ class _ProcessSheetState extends State<_ProcessSheet> {
                       // is where the rest of the text lives.
                       TextBlock(:final text) => _StepRow(
                         title: _firstLine(text),
-                        step: null,
+                        icon: iconForBlock(block),
                         onTap: () => setState(
                           () => _selected = _TextSelection(
                             _firstLine(text),
@@ -144,6 +149,13 @@ class _ProcessSheetState extends State<_ProcessSheet> {
   String _titleOf(WorkStep step, AppLocalizations l10n) =>
       step.title.trim().isNotEmpty ? step.title : l10n.toolCall;
 
+  static String _previewOf(String text, String fallback) {
+    final line = _firstLine(text);
+    return line.isEmpty ? fallback : line;
+  }
+
+  /// A row is a preview: one short line, with the page behind it holding the
+  /// rest.
   static String _firstLine(String text) {
     final line = text.trim().split('\n').first;
     return line.length <= 60 ? line : '${line.substring(0, 57)}…';
@@ -212,15 +224,27 @@ class _Header extends StatelessWidget {
 }
 
 class _StepRow extends StatelessWidget {
-  const _StepRow({required this.title, required this.step, this.onTap});
+  const _StepRow({
+    required this.title,
+    required this.icon,
+    this.status,
+    this.onTap,
+  });
 
   final String title;
-  final WorkStep? step;
+
+  /// What the row is — reasoning, prose, or a tool — so rows are not told
+  /// apart by reading them.
+  final IconData icon;
+
+  /// Tools carry a state; reasoning and prose are just content.
+  final StepStatus? status;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.ariaColors;
+    final status = this.status;
     return InkWell(
       onTap: onTap,
       borderRadius: AriaRadius.mdAll,
@@ -233,7 +257,7 @@ class _StepRow extends StatelessWidget {
           ),
           child: Row(
             children: <Widget>[
-              _StatusMark(status: step?.status ?? StepStatus.completed),
+              Icon(icon, size: 18, color: _kindColor(colors, status)),
               const SizedBox(width: AriaSpacing.sm),
               Expanded(
                 child: Text(
@@ -243,6 +267,7 @@ class _StepRow extends StatelessWidget {
                   style: context.ariaType.ui.copyWith(color: colors.text),
                 ),
               ),
+              if (status != null) _StatusMark(status: status),
               if (onTap != null)
                 Icon(
                   Icons.chevron_right_rounded,
@@ -255,6 +280,12 @@ class _StepRow extends StatelessWidget {
       ),
     );
   }
+
+  Color _kindColor(AriaColors colors, StepStatus? status) => switch (status) {
+    StepStatus.running => colors.primary,
+    StepStatus.failed => colors.error,
+    _ => colors.textMuted,
+  };
 }
 
 class _StatusMark extends StatelessWidget {

@@ -63,13 +63,27 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('a thought opens with its text', (tester) async {
+  testWidgets('each kind of step leads with its own icon', (tester) async {
     await openSheet(tester);
 
-    await tester.tap(find.text('Thinking'));
+    // Reasoning, intermediate prose, and a tool call must not look alike.
+    expect(find.byIcon(Icons.psychology_alt_outlined), findsOneWidget);
+    expect(find.byIcon(Icons.chat_bubble_outline_rounded), findsOneWidget);
+    expect(find.byIcon(Icons.visibility_outlined), findsOneWidget);
+  });
+
+  testWidgets('a thought row shows its own text, not a label', (tester) async {
+    await openSheet(tester);
+
+    expect(find.text('Thinking'), findsNothing);
+    expect(find.text(thought), findsOneWidget);
+
+    await tester.tap(find.text(thought));
     await tester.pumpAndSettle();
 
-    expect(find.textContaining(thought), findsOneWidget);
+    // The row title becomes the page header, so the text appears twice: once
+    // as that header and once as the body.
+    expect(find.textContaining(thought), findsNWidgets(2));
   });
 
   testWidgets('an intermediate prose block opens with its full text', (
