@@ -13,6 +13,15 @@ import '../transport/acp_transport.dart';
 
 part 'acp_session.dart';
 
+/// Receives the raw JSON-RPC line of every frame, in both directions.
+///
+/// The client never writes a transcript itself: a host that wants one passes
+/// this in. No sink means no extra work and no output.
+typedef AcpFrameLog = void Function({
+  required bool inbound,
+  required String payload,
+});
+
 /// Client side of an ACP connection.
 ///
 /// The client owns JSON-RPC request correlation, the session registry and
@@ -28,6 +37,10 @@ final class AcpClient {
   final Duration cancelTimeout;
 
   final AcpTransport _transport;
+
+  /// Receives every raw frame, when a host asked for a transcript.
+  final AcpFrameLog? onFrameLog;
+
   final Map<int, _PendingRequest> _pending = <int, _PendingRequest>{};
   final Map<String, AcpSession> _sessions = <String, AcpSession>{};
   final Map<String, List<PermissionRequest>> _permissionsBySession =
@@ -43,6 +56,7 @@ final class AcpClient {
     this._transport, {
     this.requestTimeout = const Duration(seconds: 60),
     this.cancelTimeout = const Duration(seconds: 15),
+    this.onFrameLog,
   }) {
     _frameSubscription = _transport.frames.listen(
       _onFrame,
@@ -226,6 +240,7 @@ final class AcpClient {
   // ── Inbound routing ─────────────────────────────────────────────────────
 
   void _onFrame(String line) {
+    onFrameLog?.call(inbound: true, payload: line);
     final Object? decoded;
     try {
       decoded = jsonDecode(line);
@@ -428,7 +443,7 @@ final class AcpClient {
     final completer = Completer<Map<String, Object?>>();
     _pending[id] = _PendingRequest(completer, method);
     unawaited(
-      _transport.send(
+      _write(
         jsonEncode(<String, Object?>{
           'jsonrpc': '2.0',
           'id': id,
@@ -450,17 +465,21 @@ final class AcpClient {
     );
   }
 
-  Future<void> _notify(String method, Map<String, Object?> params) =>
-      _transport.send(
-        jsonEncode(<String, Object?>{
-          'jsonrpc': '2.0',
-          'method': method,
-          'params': params,
-        }),
-      );
+  Future<void> _notify(String method, Map<String, Object?> params) => _write(
+    jsonEncode(<String, Object?>{
+      'jsonrpc': '2.0',
+      'method': method,
+      'params': params,
+    }),
+  );
 
-  Future<void> _send(Map<String, Object?> frame) =>
-      _transport.send(jsonEncode(frame));
+  Future<void> _send(Map<String, Object?> frame) => _write(jsonEncode(frame));
+
+  /// Sends one frame, handing it to the transcript first when one is attached.
+  Future<void> _write(String frame) {
+    onFrameLog?.call(inbound: false, payload: frame);
+    return _transport.send(frame);
+  }
 
   /// Completes an in-flight request locally (used by the cancel watchdog).
   void _abandon(int requestId, String stopReason) {
