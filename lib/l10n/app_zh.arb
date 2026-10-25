@@ -101,14 +101,8 @@
   "processTitle": "执行过程",
   "processEmpty": "没有执行过程。",
   "thinkingProcess": "思考过程",
-  "processRunning": "执行中 · 第 {index} 步",
-  "@processRunning": {
-    "placeholders": {
-      "index": {
-        "type": "int"
-      }
-    }
-  },
+  "processThinking": "正在思考",
+  "processAnswering": "正在整理回复",
   "processDone": "已完成 · {count} 步",
   "@processDone": {
     "placeholders": {

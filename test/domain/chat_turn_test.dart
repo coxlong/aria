@@ -45,7 +45,6 @@ void main() {
     expect(turn.answerText, isEmpty);
     expect(turn.processBlocks.length, 2);
     expect(turn.activeTool?.id, 'tc1');
-    expect(turn.capsuleActive, isTrue);
     expect(turn.streamingAnswer, isFalse);
   });
 
@@ -69,15 +68,14 @@ void main() {
     expect(turn.answerText, 'Done');
     expect(turn.processBlocks.single, isA<ToolBlock>());
     expect(turn.streamingAnswer, isTrue);
-    expect(turn.capsuleActive, isFalse);
   });
 
-  test('a running turn with nothing visible yet waits', () {
+  test('a running turn with nothing yet has no process to show', () {
     const turn = ChatTurn(id: 't1', userText: 'Ship it', running: true);
 
-    expect(turn.awaitingFirstOutput, isTrue);
-    expect(turn.answerText, isEmpty);
     expect(turn.hasProcess, isFalse);
+    expect(turn.activeTool, isNull);
+    expect(turn.answerText, isEmpty);
   });
 
   test('tools keep their wire order and find the active one', () {

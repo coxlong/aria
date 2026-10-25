@@ -113,19 +113,7 @@ final class ChatTurn {
     return null;
   }
 
-  bool get hasRunningTool => activeTool != null;
-
   /// True while the agent is emitting answer prose.
   bool get streamingAnswer =>
       running && _showsAnswer && (blocks.last as TextBlock).text.isNotEmpty;
-
-  /// True when the process pill should read as live.
-  bool get capsuleActive {
-    if (!running) return false;
-    if (hasRunningTool) return true;
-    return blocks.isNotEmpty && blocks.last is ThoughtBlock;
-  }
-
-  /// Nothing visible is happening yet: show the waiting dots.
-  bool get awaitingFirstOutput => running && !streamingAnswer && !capsuleActive;
 }

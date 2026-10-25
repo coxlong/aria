@@ -9,6 +9,7 @@ import '../../../../domain/chat/chat_turn.dart';
 import '../../../../domain/chat/work_step.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'step_icon.dart';
+import 'step_preview.dart';
 
 /// Shows what the agent did during one turn.
 ///
@@ -129,11 +130,11 @@ class _ProcessSheetState extends State<_ProcessSheet> {
                       // only has room for its first line; the page behind it
                       // is where the rest of the text lives.
                       TextBlock(:final text) => _StepRow(
-                        title: _firstLine(text),
+                        title: firstLineOf(text),
                         icon: iconForBlock(block),
                         onTap: () => setState(
                           () => _selected = _TextSelection(
-                            _firstLine(text),
+                            firstLineOf(text),
                             text,
                           ),
                         ),
@@ -150,15 +151,8 @@ class _ProcessSheetState extends State<_ProcessSheet> {
       step.title.trim().isNotEmpty ? step.title : l10n.toolCall;
 
   static String _previewOf(String text, String fallback) {
-    final line = _firstLine(text);
+    final line = firstLineOf(text);
     return line.isEmpty ? fallback : line;
-  }
-
-  /// A row is a preview: one short line, with the page behind it holding the
-  /// rest.
-  static String _firstLine(String text) {
-    final line = text.trim().split('\n').first;
-    return line.length <= 60 ? line : '${line.substring(0, 57)}…';
   }
 }
 

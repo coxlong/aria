@@ -494,11 +494,17 @@ abstract class AppLocalizations {
   /// **'Thinking'**
   String get thinkingProcess;
 
-  /// No description provided for @processRunning.
+  /// No description provided for @processThinking.
   ///
   /// In en, this message translates to:
-  /// **'Running · step {index}'**
-  String processRunning(int index);
+  /// **'Thinking'**
+  String get processThinking;
+
+  /// No description provided for @processAnswering.
+  ///
+  /// In en, this message translates to:
+  /// **'Writing the reply'**
+  String get processAnswering;
 
   /// No description provided for @processDone.
   ///

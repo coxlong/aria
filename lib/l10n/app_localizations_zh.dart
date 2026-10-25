@@ -218,9 +218,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get thinkingProcess => '思考过程';
 
   @override
-  String processRunning(int index) {
-    return '执行中 · 第 $index 步';
-  }
+  String get processThinking => '正在思考';
+
+  @override
+  String get processAnswering => '正在整理回复';
 
   @override
   String processDone(int count) {

@@ -230,9 +230,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get thinkingProcess => 'Thinking';
 
   @override
-  String processRunning(int index) {
-    return 'Running · step $index';
-  }
+  String get processThinking => 'Thinking';
+
+  @override
+  String get processAnswering => 'Writing the reply';
 
   @override
   String processDone(int count) {
