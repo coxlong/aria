@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:acp/acp.dart';
+import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../core/error/app_error.dart';
@@ -10,6 +11,7 @@ import '../../../domain/decision/decision.dart';
 import '../../../domain/executor/executor.dart';
 import '../../../domain/profile/server_profile.dart';
 import '../../../domain/session/agent_session.dart';
+import 'acp_debug_log.dart';
 
 /// The ACP implementation of [Executor].
 ///
@@ -40,8 +42,14 @@ final class AcpExecutor implements Executor {
   final List<MapEntry<String, PermissionRequest>> _permissions =
       <MapEntry<String, PermissionRequest>>[];
 
-  /// Titles seen on tool-call start frames, so later patches can keep them.
-  final Map<String, String> _titles = <String, String>{};
+  /// Latest tool call per id. Patches only carry the fields that changed, and
+  /// a later frame usually omits `rawInput`, so the previous value is what
+  /// keeps a step's input from disappearing.
+  final Map<String, ToolCallInfo> _calls = <String, ToolCallInfo>{};
+
+  /// Debug-only transcript of the raw ACP wire. Off in release builds.
+  late final AcpDebugLog? _frameLog =
+      kDebugMode ? AcpDebugLog.open() : null;
 
   InitializeResult? _initialized;
   bool _disposed = false;
@@ -82,7 +90,7 @@ final class AcpExecutor implements Executor {
         Uri.parse(profile.profile.url),
         token: profile.token.isEmpty ? null : profile.token,
       );
-      client = AcpClient(transport);
+      client = AcpClient(transport, onFrameLog: _frameLog?.call);
       _stateSubscription = client.states.listen(_onTransportState);
       _permissionSubscription = client.permissionRequests.listen(_onPermission);
       _client = client;
@@ -189,7 +197,7 @@ final class AcpExecutor implements Executor {
     unawaited(_updates?.cancel());
     _updates = null;
     _session = session;
-    _titles.clear();
+    _calls.clear();
     if (previous == null || previous.id == session.id) return;
 
     _permissions.removeWhere((entry) => entry.value.sessionId == previous.id);
@@ -229,7 +237,6 @@ final class AcpExecutor implements Executor {
     } on Object catch (failure) {
       _emit(ExecutionFailed(sessionId, AppError.from(failure)));
     } finally {
-      _titles.clear();
       // Only this session's requests: another session may be showing an
       // approval of its own, and a turn ending elsewhere must not deny it.
       await _settlePendingPermissions(sessionId);
@@ -367,20 +374,22 @@ final class AcpExecutor implements Executor {
         :final rawInput,
         :final rawOutput,
         :final content,
+        :final meta,
       ):
-        _emit(
-          StepChanged(
-            sessionId,
-            WorkStep(
-              id: toolCallId,
-              title: title ?? _titles[toolCallId] ?? '',
-              status: _stepStatus(status),
-              detail: _detailOf(content),
-              input: _encode(rawInput),
-              output: _encode(rawOutput),
-            ),
-          ),
-        );
+        // Merge onto the last frame that carried each field: null means
+        // "unchanged" in the protocol, and a patch that only reports status
+        // must not wipe the input the start frame supplied.
+        final merged = (_calls[toolCallId] ??
+                ToolCallInfo(id: toolCallId, title: title ?? ''))
+            .copyWith(
+              title: title,
+              status: status,
+              rawInput: rawInput,
+              rawOutput: rawOutput,
+              content: content,
+              meta: meta,
+            );
+        _emit(StepChanged(sessionId, _stepOf(merged)));
       case CurrentModeUpdate():
       case ConfigOptionUpdate():
         _emit(SurfacesChanged(sessionId));
@@ -431,7 +440,7 @@ final class AcpExecutor implements Executor {
   }
 
   WorkStep _stepOf(ToolCallInfo call) {
-    _titles[call.id] = call.title;
+    _calls[call.id] = call;
     return WorkStep(
       id: call.id,
       title: call.title,
@@ -510,7 +519,8 @@ final class AcpExecutor implements Executor {
     _client = null;
     _session = null;
     _permissions.clear();
-    _titles.clear();
+    _calls.clear();
+    _frameLog?.close();
     await _events.close();
     await _connection.close();
   }
