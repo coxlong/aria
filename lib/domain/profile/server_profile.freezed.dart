@@ -16,7 +16,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ServerProfile {
 
- String get id; String get name; String get url; String get cwd;
+ String get id; String get name; String get url; String get cwd;/// One line saying what this agent handles, shown in the agent list.
+ String get description;
 /// Create a copy of ServerProfile
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,20 +31,20 @@ $ServerProfileCopyWith<ServerProfile> get copyWith => _$ServerProfileCopyWithImp
 @override
 bool operator ==(Object other) {
   final _this = this as ServerProfile;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ServerProfile&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.url, _this.url) || other.url == _this.url)&&(identical(other.cwd, _this.cwd) || other.cwd == _this.cwd));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ServerProfile&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.url, _this.url) || other.url == _this.url)&&(identical(other.cwd, _this.cwd) || other.cwd == _this.cwd)&&(identical(other.description, _this.description) || other.description == _this.description));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
   final _this = this as ServerProfile;
-  return Object.hash(runtimeType,_this.id,_this.name,_this.url,_this.cwd);
+  return Object.hash(runtimeType,_this.id,_this.name,_this.url,_this.cwd,_this.description);
 }
 
 @override
 String toString() {
   final _this = this as ServerProfile;
-  return 'ServerProfile(id: ${_this.id}, name: ${_this.name}, url: ${_this.url}, cwd: ${_this.cwd})';
+  return 'ServerProfile(id: ${_this.id}, name: ${_this.name}, url: ${_this.url}, cwd: ${_this.cwd}, description: ${_this.description})';
 }
 
 
@@ -54,7 +55,7 @@ abstract mixin class $ServerProfileCopyWith<$Res>  {
   factory $ServerProfileCopyWith(ServerProfile value, $Res Function(ServerProfile) _then) = _$ServerProfileCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, String url, String cwd
+ String id, String name, String url, String cwd, String description
 });
 
 
@@ -71,12 +72,13 @@ class _$ServerProfileCopyWithImpl<$Res>
 
 /// Create a copy of ServerProfile
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? url = null,Object? cwd = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? url = null,Object? cwd = null,Object? description = null,}) {
   return _then(ServerProfile(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,url: null == url ? _self.url : url // ignore: cast_nullable_to_non_nullable
 as String,cwd: null == cwd ? _self.cwd : cwd // ignore: cast_nullable_to_non_nullable
+as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -162,10 +164,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String url,  String cwd)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String url,  String cwd,  String description)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ServerProfile() when $default != null:
-return $default(_that.id,_that.name,_that.url,_that.cwd);case _:
+return $default(_that.id,_that.name,_that.url,_that.cwd,_that.description);case _:
   return orElse();
 
 }
@@ -183,10 +185,10 @@ return $default(_that.id,_that.name,_that.url,_that.cwd);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String url,  String cwd)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String url,  String cwd,  String description)  $default,) {final _that = this;
 switch (_that) {
 case _ServerProfile():
-return $default(_that.id,_that.name,_that.url,_that.cwd);case _:
+return $default(_that.id,_that.name,_that.url,_that.cwd,_that.description);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -203,10 +205,10 @@ return $default(_that.id,_that.name,_that.url,_that.cwd);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String url,  String cwd)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String url,  String cwd,  String description)?  $default,) {final _that = this;
 switch (_that) {
 case _ServerProfile() when $default != null:
-return $default(_that.id,_that.name,_that.url,_that.cwd);case _:
+return $default(_that.id,_that.name,_that.url,_that.cwd,_that.description);case _:
   return null;
 
 }
@@ -218,13 +220,15 @@ return $default(_that.id,_that.name,_that.url,_that.cwd);case _:
 @JsonSerializable()
 
 class _ServerProfile implements ServerProfile {
-  const _ServerProfile({required this.id, required this.name, required this.url, this.cwd = ''});
+  const _ServerProfile({required this.id, required this.name, required this.url, this.cwd = '', this.description = ''});
   factory _ServerProfile.fromJson(Map<String, dynamic> json) => _$ServerProfileFromJson(json);
 
 @override final  String id;
 @override final  String name;
 @override final  String url;
 @override@JsonKey() final  String cwd;
+/// One line saying what this agent handles, shown in the agent list.
+@override@JsonKey() final  String description;
 
 /// Create a copy of ServerProfile
 /// with the given fields replaced by the non-null parameter values.
@@ -239,18 +243,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ServerProfile&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.url, url) || other.url == url)&&(identical(other.cwd, cwd) || other.cwd == cwd));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ServerProfile&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.url, url) || other.url == url)&&(identical(other.cwd, cwd) || other.cwd == cwd)&&(identical(other.description, description) || other.description == description));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,name,url,cwd);
+    return Object.hash(runtimeType,id,name,url,cwd,description);
 }
 
 @override
 String toString() {
-    return 'ServerProfile(id: $id, name: $name, url: $url, cwd: $cwd)';
+    return 'ServerProfile(id: $id, name: $name, url: $url, cwd: $cwd, description: $description)';
 }
 
 
@@ -261,7 +265,7 @@ abstract mixin class _$ServerProfileCopyWith<$Res> implements $ServerProfileCopy
   factory _$ServerProfileCopyWith(_ServerProfile value, $Res Function(_ServerProfile) _then) = __$ServerProfileCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, String url, String cwd
+ String id, String name, String url, String cwd, String description
 });
 
 
@@ -278,12 +282,13 @@ class __$ServerProfileCopyWithImpl<$Res>
 
 /// Create a copy of ServerProfile
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? url = null,Object? cwd = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? url = null,Object? cwd = null,Object? description = null,}) {
   return _then(_ServerProfile(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,url: null == url ? _self.url : url // ignore: cast_nullable_to_non_nullable
 as String,cwd: null == cwd ? _self.cwd : cwd // ignore: cast_nullable_to_non_nullable
+as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }

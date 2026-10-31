@@ -4,25 +4,26 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../features/chat/presentation/chat_page.dart';
 import '../features/connect/presentation/connect_page.dart';
-import '../features/connection/application/connection_controller.dart';
-import '../features/settings/presentation/server_edit_page.dart';
-import '../features/settings/presentation/settings_page.dart';
+import '../features/connection/application/agent_manager.dart';
+import '../features/home/presentation/home_page.dart';
 
 part 'app_router.g.dart';
 
-/// Aria has one entry and one workspace.
+/// Aria has one entrance and two surfaces: home, and one conversation.
 ///
-/// The app always opens on the server list; a session exists only after a
-/// connection succeeds, and losing it sends the person back to that list. There
-/// is no way to reach the chat surface without a live session, which is exactly
-/// the state the old home screen could not guarantee.
+/// A connection is not a conversation: home opens as soon as an agent answers,
+/// and a session exists only once a conversation is opened. Every connected
+/// agent keeps running in the background; the router only follows the active
+/// one. Settings and agent configuration live in sheets, not routes, so the
+/// back stack only means one thing.
 @Riverpod(keepAlive: true)
 GoRouter appRouter(Ref ref) {
   final refresh = ValueNotifier<int>(0);
-  ref.listen(connectionProvider, (previous, next) {
+  ref.listen(agentManagerProvider, (previous, next) {
     final changed =
-        previous?.status != next.status ||
-        previous?.session?.id != next.session?.id;
+        previous?.activeAgentId != next.activeAgentId ||
+        previous?.activeAgent?.status != next.activeAgent?.status ||
+        previous?.activeSessionId != next.activeSessionId;
     if (changed) refresh.value++;
   });
 
@@ -30,15 +31,18 @@ GoRouter appRouter(Ref ref) {
     initialLocation: '/connect',
     refreshListenable: refresh,
     redirect: (context, state) {
-      final hasSession = ref.read(connectionProvider).session != null;
+      final manager = ref.read(agentManagerProvider);
       final location = state.matchedLocation;
-      final onSettings = location.startsWith('/settings');
 
-      if (!hasSession) {
-        if (location == '/connect' || onSettings) return null;
-        return '/connect';
+      if (!manager.isConnected) {
+        return location == '/connect' ? null : '/connect';
       }
-      if (location == '/connect') return '/chat';
+      // `/connect` is left in place while the wake screen holds its success
+      // bloom; that page goes home itself. Anything else connected belongs home.
+      if (location == '/') return '/home';
+      if (location == '/chat' && manager.activeSessionRef == null) {
+        return '/home';
+      }
       return null;
     },
     routes: <RouteBase>[
@@ -46,17 +50,12 @@ GoRouter appRouter(Ref ref) {
         path: '/connect',
         builder: (context, state) => const ConnectPage(),
       ),
-      GoRoute(path: '/chat', builder: (context, state) => const ChatPage()),
+      GoRoute(path: '/home', builder: (context, state) => const HomePage()),
       GoRoute(
-        path: '/settings',
-        builder: (context, state) => const SettingsPage(),
-        routes: <RouteBase>[
-          GoRoute(
-            path: 'server/:id',
-            builder: (context, state) =>
-                ServerEditPage(profileId: state.pathParameters['id'] ?? 'new'),
-          ),
-        ],
+        path: '/chat',
+        builder: (context, state) => ChatPage(
+          initialText: state.extra is String ? state.extra as String : null,
+        ),
       ),
     ],
   );

@@ -8,32 +8,35 @@ part of 'app_router.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Aria has one entry and one workspace.
+/// Aria has one entrance and two surfaces: home, and one conversation.
 ///
-/// The app always opens on the server list; a session exists only after a
-/// connection succeeds, and losing it sends the person back to that list. There
-/// is no way to reach the chat surface without a live session, which is exactly
-/// the state the old home screen could not guarantee.
+/// A connection is not a conversation: home opens as soon as an agent answers,
+/// and a session exists only once a conversation is opened. Every connected
+/// agent keeps running in the background; the router only follows the active
+/// one. Settings and agent configuration live in sheets, not routes, so the
+/// back stack only means one thing.
 
 @ProviderFor(appRouter)
 final appRouterProvider = AppRouterProvider._();
 
-/// Aria has one entry and one workspace.
+/// Aria has one entrance and two surfaces: home, and one conversation.
 ///
-/// The app always opens on the server list; a session exists only after a
-/// connection succeeds, and losing it sends the person back to that list. There
-/// is no way to reach the chat surface without a live session, which is exactly
-/// the state the old home screen could not guarantee.
+/// A connection is not a conversation: home opens as soon as an agent answers,
+/// and a session exists only once a conversation is opened. Every connected
+/// agent keeps running in the background; the router only follows the active
+/// one. Settings and agent configuration live in sheets, not routes, so the
+/// back stack only means one thing.
 
 final class AppRouterProvider
     extends $FunctionalProvider<GoRouter, GoRouter, GoRouter>
     with $Provider<GoRouter> {
-  /// Aria has one entry and one workspace.
+  /// Aria has one entrance and two surfaces: home, and one conversation.
   ///
-  /// The app always opens on the server list; a session exists only after a
-  /// connection succeeds, and losing it sends the person back to that list. There
-  /// is no way to reach the chat surface without a live session, which is exactly
-  /// the state the old home screen could not guarantee.
+  /// A connection is not a conversation: home opens as soon as an agent answers,
+  /// and a session exists only once a conversation is opened. Every connected
+  /// agent keeps running in the background; the router only follows the active
+  /// one. Settings and agent configuration live in sheets, not routes, so the
+  /// back stack only means one thing.
   AppRouterProvider._()
     : super(
         from: null,
@@ -67,4 +70,4 @@ final class AppRouterProvider
   }
 }
 
-String _$appRouterHash() => r'915b976638efd6c8d66d83b5e1668689c88b8437';
+String _$appRouterHash() => r'bb23526f3dc3354565f7f6ce0c5ed36e0e6c6ecd';

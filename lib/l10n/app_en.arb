@@ -64,7 +64,7 @@
   "language": "Language",
   "languageSystem": "System",
   "languageEnglish": "English",
-  "languageChinese": "简体中文",
+  "languageChinese": "中文",
   "errorNetwork": "Cannot reach the agent. Check the URL and the connection.",
   "errorAuth": "The agent rejected the token.",
   "errorProtocol": "This endpoint is not speaking ACP v1.",
@@ -82,13 +82,20 @@
   "errorRefused": "The agent declined to continue. Rephrase the request or change the approach.",
   "errorTruncated": "The answer hit the model's token limit and was cut off.",
   "retry": "Retry",
-  "connectSubtitle": "Pick an executor to connect to.",
+  "connectSubtitle": "Pick an agent to connect to.",
   "connect": "Connect",
   "connecting": "Connecting…",
   "connected": "Connected",
   "disconnected": "Disconnected",
+  "connectFirstAgent": "Add an agent first",
+  "connectFirstAgentBody": "Add an endpoint, then Aria can start.",
+  "connectAria": "Connect Aria",
+  "connectingAria": "Connecting Aria",
+  "connectionFailed": "Connection failed",
+  "changeAgent": "Change",
+  "chooseAgent": "Choose an agent",
   "reconnectingShort": "Reconnecting",
-  "manageExecutors": "Manage executors",
+  "manageExecutors": "Manage agents",
   "newChat": "New chat",
   "sessions": "Recent",
   "noSessions": "No sessions yet.",
@@ -110,5 +117,250 @@
         "type": "int"
       }
     }
-  }
+  },
+  "heroQuestion": "What can Aria do for you?",
+  "homeComposeHint": "Describe a task to start",
+  "startConversation": "Start a conversation",
+  "recentConversations": "Recent",
+  "takesThis": "{name} takes this",
+  "@takesThis": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "noConversations": "No conversations yet. Start with one specific task.",
+  "searchConversations": "Search conversations",
+  "findConversation": "Search",
+  "searchKicker": "SEARCH",
+  "searchHint": "Type a keyword",
+  "noSearchResults": "No match for “{query}”. Try another word.",
+  "@noSearchResults": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "conversations": "Conversations",
+  "youPrefix": "You: ",
+  "newConversation": "New conversation",
+  "now": "now",
+  "minutesAgo": "{count} min ago",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{count} hr ago",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsKicker": "ARIA",
+  "theme": "Theme",
+  "themeDark": "Dark",
+  "themeLight": "Light",
+  "themeSystem": "System",
+  "agents": "Agents",
+  "agent": "Agent",
+  "addAgent": "Add an agent",
+  "agentName": "Name",
+  "agentNameHint": "e.g. Translate",
+  "agentNameTaken": "That name is taken",
+  "tokenOptionalHint": "Leave blank if none",
+  "agentDesc": "What it handles",
+  "agentDescHint": "One line is enough",
+  "agentDefault": "Default",
+  "makeDefault": "Make default",
+  "connectThisAgent": "Connect this agent",
+  "defaultSet": "{name} is now the default",
+  "@defaultSet": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "defaultCannotDelete": "The default cannot be deleted. Set another as default first.",
+  "disconnectToDelete": "Disconnect before deleting this agent.",
+  "add": "Add",
+  "agentAdded": "{name} added",
+  "@agentAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "agentDeleted": "{name} deleted",
+  "@agentDeleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "agentSaved": "Configuration saved",
+  "agentLocked": "The address, token and directory are locked while connected. Disconnect to change them.",
+  "disconnect": "Disconnect",
+  "disconnectedKept": "Disconnected · conversations kept",
+  "disconnectConfirm": "Disconnect from {name}?",
+  "@disconnectConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "done": "Done",
+  "close": "Close",
+  "backToSettings": "Settings",
+  "connectTitle": "Connect an agent",
+  "noAgents": "No agents yet.",
+  "currentAgent": "Current agent",
+  "workingNote": "Working…",
+  "liveStep": "Running {name}…",
+  "@liveStep": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "thinkingNow": "Thinking…",
+  "replyingNow": "Replying…",
+  "needsApproval": "Needs approval",
+  "needsApprovalWith": "Needs approval: {prompt}",
+  "@needsApprovalWith": {
+    "placeholders": {
+      "prompt": {
+        "type": "String"
+      }
+    }
+  },
+  "waitingForYou": "Waiting for you",
+  "stoppedNotice": "Stopped · what was produced is kept.",
+  "jumpLatest": "Latest",
+  "composerPlaceholder": "Add more detail…",
+  "composerLabel": "Message Aria",
+  "stopToast": "Stopped",
+  "turnRunningToast": "This turn is still running. Stop it or wait.",
+  "workLog": "Work log",
+  "thought": "Thought",
+  "statusDone": "Done",
+  "statusRunning": "Running",
+  "statusFailed": "Failed",
+  "statusPending": "Pending",
+  "statusStopped": "Stopped",
+  "statusSkipped": "Skipped",
+  "toolsUsed": "{count, plural, =1{1 tool} other{{count} tools}}",
+  "@toolsUsed": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "thoughtsCount": "{count, plural, =1{1 thought} other{{count} thoughts}}",
+  "@thoughtsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "thoughtsCountSuffix": ", {count, plural, =1{1 thought} other{{count} thoughts}}",
+  "@thoughtsCountSuffix": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "failedCountSuffix": " · {count} failed",
+  "@failedCountSuffix": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "failedSuffix": " · Failed",
+  "stepsCount": "{count, plural, =1{1 step} other{{count} steps}}",
+  "@stepsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "andMoreSteps": " · {count, plural, =1{1 step} other{{count} steps}}",
+  "@andMoreSteps": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "andMore": "…",
+  "listSeparator": ", ",
+  "stepError": "Error",
+  "backToWorkLog": "Back to work log",
+  "workLogGone": "This work log is gone",
+  "stepGone": "This step is gone",
+  "thoughtGone": "This thought is gone",
+  "modelEffortMode": "Model and execution",
+  "thisTurn": "THIS TURN",
+  "reasoningEffort": "Reasoning effort",
+  "appliesNextTurn": "Applies to the next turn.",
+  "noModels": "This endpoint offers no model choice.",
+  "noEfforts": "This endpoint offers no effort setting.",
+  "noModes": "This endpoint offers no modes.",
+  "modelChipLabel": "Model {model}, reasoning effort {effort}, mode {mode}",
+  "@modelChipLabel": {
+    "placeholders": {
+      "model": {
+        "type": "String"
+      },
+      "effort": {
+        "type": "String"
+      },
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "approvalKicker": "APPROVAL",
+  "command": "Command",
+  "approvalDetail": "Details",
+  "riskNote": "This touches outside the workspace and cannot be undone.",
+  "cancelThis": "Cancel this",
+  "optionAllowOnce": "This run only",
+  "optionAllowAlways": "Stop asking for this kind",
+  "optionRejectOnce": "Do not run this time",
+  "optionRejectAlways": "Refuse this kind from now on",
+  "requestClosed": "This request is closed",
+  "connectionLost": "Connection lost · reconnecting; queued work replays automatically.",
+  "connectionOffline": "Offline",
+  "notConnected": "Not connected",
+  "onWatch": "On watch",
+  "connectToStart": "Connect an agent to start.",
+  "edit": "Edit",
+  "deleteAgentConfirm": "Delete “{name}”? This cannot be undone.",
+  "@deleteAgentConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "relink": "Reconnect",
+  "sessionRefreshing": "Refreshing…"
 }

@@ -126,7 +126,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get languageEnglish => 'English';
 
   @override
-  String get languageChinese => '简体中文';
+  String get languageChinese => '中文';
 
   @override
   String get errorNetwork => '连不上这个执行端。检查地址与网络。';
@@ -161,7 +161,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get retry => '重试';
 
   @override
-  String get connectSubtitle => '选择一个执行端连接。';
+  String get connectSubtitle => '选一个 Agent 连接。';
 
   @override
   String get connect => '连接';
@@ -176,10 +176,31 @@ class AppLocalizationsZh extends AppLocalizations {
   String get disconnected => '已断开';
 
   @override
+  String get connectFirstAgent => '先接上一个 Agent';
+
+  @override
+  String get connectFirstAgentBody => '添加一个执行端，Aria 才能开始做事。';
+
+  @override
+  String get connectAria => '连接 Aria';
+
+  @override
+  String get connectingAria => '正在连接 Aria';
+
+  @override
+  String get connectionFailed => '连接失败';
+
+  @override
+  String get changeAgent => '切换';
+
+  @override
+  String get chooseAgent => '选择 Agent';
+
+  @override
   String get reconnectingShort => '重连中';
 
   @override
-  String get manageExecutors => '管理执行端';
+  String get manageExecutors => '管理 Agent';
 
   @override
   String get newChat => '新对话';
@@ -227,4 +248,379 @@ class AppLocalizationsZh extends AppLocalizations {
   String processDone(int count) {
     return '已完成 · $count 步';
   }
+
+  @override
+  String get heroQuestion => '要做什么，直接说。';
+
+  @override
+  String get homeComposeHint => '描述任务，开启新对话';
+
+  @override
+  String get startConversation => '开始新对话';
+
+  @override
+  String get recentConversations => '最近对话';
+
+  @override
+  String takesThis(String name) {
+    return '由 $name 接';
+  }
+
+  @override
+  String get noConversations => '还没有对话。从一件具体的小事开始。';
+
+  @override
+  String get searchConversations => '搜索对话';
+
+  @override
+  String get findConversation => '搜索';
+
+  @override
+  String get searchKicker => '搜索';
+
+  @override
+  String get searchHint => '输入关键词';
+
+  @override
+  String noSearchResults(String query) {
+    return '没有找到「$query」。换个词试试。';
+  }
+
+  @override
+  String get conversations => '对话';
+
+  @override
+  String get youPrefix => '你：';
+
+  @override
+  String get newConversation => '新对话';
+
+  @override
+  String get now => '现在';
+
+  @override
+  String minutesAgo(int count) {
+    return '$count 分钟前';
+  }
+
+  @override
+  String hoursAgo(int count) {
+    return '$count 小时前';
+  }
+
+  @override
+  String get settingsKicker => 'ARIA';
+
+  @override
+  String get theme => '主题';
+
+  @override
+  String get themeDark => '深色';
+
+  @override
+  String get themeLight => '浅色';
+
+  @override
+  String get themeSystem => '跟随';
+
+  @override
+  String get agents => 'Agent';
+
+  @override
+  String get agent => 'Agent';
+
+  @override
+  String get addAgent => '添加 Agent';
+
+  @override
+  String get agentName => '名称';
+
+  @override
+  String get agentNameHint => '比如：查';
+
+  @override
+  String get agentNameTaken => '这个名字已经用过了';
+
+  @override
+  String get tokenOptionalHint => '留空表示不需要';
+
+  @override
+  String get agentDesc => '负责什么';
+
+  @override
+  String get agentDescHint => '一句话就够';
+
+  @override
+  String get agentDefault => '默认';
+
+  @override
+  String get makeDefault => '设为默认';
+
+  @override
+  String get connectThisAgent => '连接这个 Agent';
+
+  @override
+  String defaultSet(String name) {
+    return '已将 $name 设为默认';
+  }
+
+  @override
+  String get defaultCannotDelete => '默认不能删，先把下一个设为默认';
+
+  @override
+  String get disconnectToDelete => '断开连接后才能删除这个 Agent。';
+
+  @override
+  String get add => '添加';
+
+  @override
+  String agentAdded(String name) {
+    return '加了 $name';
+  }
+
+  @override
+  String agentDeleted(String name) {
+    return '已删除 $name';
+  }
+
+  @override
+  String get agentSaved => '配置已保存';
+
+  @override
+  String get agentLocked => '连接中不能改地址、Token 和目录。断开后可修改。';
+
+  @override
+  String get disconnect => '断开连接';
+
+  @override
+  String get disconnectedKept => '已断开 · 对话已保留';
+
+  @override
+  String disconnectConfirm(String name) {
+    return '断开与 $name 的连接？';
+  }
+
+  @override
+  String get done => '完成';
+
+  @override
+  String get close => '关闭';
+
+  @override
+  String get backToSettings => '返回设置';
+
+  @override
+  String get connectTitle => '连接执行端';
+
+  @override
+  String get noAgents => '还没有 Agent。';
+
+  @override
+  String get currentAgent => '当前 Agent';
+
+  @override
+  String get workingNote => '正在做…';
+
+  @override
+  String liveStep(String name) {
+    return '正在$name…';
+  }
+
+  @override
+  String get thinkingNow => '正在思考…';
+
+  @override
+  String get replyingNow => '正在回…';
+
+  @override
+  String get needsApproval => '等你授权';
+
+  @override
+  String needsApprovalWith(String prompt) {
+    return '等你授权：$prompt';
+  }
+
+  @override
+  String get waitingForYou => '等你回一句';
+
+  @override
+  String get stoppedNotice => '已停止 · 已保留上面的内容。';
+
+  @override
+  String get jumpLatest => '回到最新';
+
+  @override
+  String get composerPlaceholder => '继续补充…';
+
+  @override
+  String get composerLabel => '给 Aria 发消息';
+
+  @override
+  String get stopToast => '已停止';
+
+  @override
+  String get turnRunningToast => '这一轮还在跑；先停止，或等它结束。';
+
+  @override
+  String get workLog => '执行记录';
+
+  @override
+  String get thought => '思考';
+
+  @override
+  String get statusDone => '完成';
+
+  @override
+  String get statusRunning => '进行中';
+
+  @override
+  String get statusFailed => '失败';
+
+  @override
+  String get statusPending => '等待';
+
+  @override
+  String get statusStopped => '已停止';
+
+  @override
+  String get statusSkipped => '已跳过';
+
+  @override
+  String toolsUsed(int count) {
+    return '用了 $count 个工具';
+  }
+
+  @override
+  String thoughtsCount(int count) {
+    return '$count 段思考';
+  }
+
+  @override
+  String thoughtsCountSuffix(int count) {
+    return '，$count 段思考';
+  }
+
+  @override
+  String failedCountSuffix(int count) {
+    return ' · $count 处失败';
+  }
+
+  @override
+  String get failedSuffix => ' · 失败';
+
+  @override
+  String stepsCount(int count) {
+    return '$count 步';
+  }
+
+  @override
+  String andMoreSteps(int count) {
+    return '等 $count 步';
+  }
+
+  @override
+  String get andMore => '等';
+
+  @override
+  String get listSeparator => '、';
+
+  @override
+  String get stepError => '错误';
+
+  @override
+  String get backToWorkLog => '返回执行记录';
+
+  @override
+  String get workLogGone => '这段执行记录不在了';
+
+  @override
+  String get stepGone => '这一步不在记录里了';
+
+  @override
+  String get thoughtGone => '这段思考不在了';
+
+  @override
+  String get modelEffortMode => '模型与执行方式';
+
+  @override
+  String get thisTurn => '本轮设置';
+
+  @override
+  String get reasoningEffort => '推理强度';
+
+  @override
+  String get appliesNextTurn => '下一轮生效。';
+
+  @override
+  String get noModels => '此执行端未提供模型选择。';
+
+  @override
+  String get noEfforts => '此执行端未提供推理强度。';
+
+  @override
+  String get noModes => '此执行端未提供模式。';
+
+  @override
+  String modelChipLabel(String model, String effort, String mode) {
+    return '模型 $model，推理强度 $effort，模式 $mode';
+  }
+
+  @override
+  String get approvalKicker => '等待授权';
+
+  @override
+  String get command => '命令';
+
+  @override
+  String get approvalDetail => '详情';
+
+  @override
+  String get riskNote => '这条命令会修改工作区之外的内容，执行后不能撤销。';
+
+  @override
+  String get cancelThis => '取消这次';
+
+  @override
+  String get optionAllowOnce => '只这次运行';
+
+  @override
+  String get optionAllowAlways => '以后同类命令不再问';
+
+  @override
+  String get optionRejectOnce => '这次不运行';
+
+  @override
+  String get optionRejectAlways => '以后同类命令都拒绝';
+
+  @override
+  String get requestClosed => '这个请求已经处理过了';
+
+  @override
+  String get connectionLost => '与执行端的连接断了 · 正在重连，恢复后自动补发。';
+
+  @override
+  String get connectionOffline => '离线';
+
+  @override
+  String get notConnected => '未连接';
+
+  @override
+  String get onWatch => '值守中';
+
+  @override
+  String get connectToStart => '连接执行端后开始。';
+
+  @override
+  String get edit => '编辑';
+
+  @override
+  String deleteAgentConfirm(String name) {
+    return '删除「$name」？删了就找不回来。';
+  }
+
+  @override
+  String get relink => '重新连接';
+
+  @override
+  String get sessionRefreshing => '正在刷新…';
 }

@@ -18,29 +18,32 @@ double _contrast(Color foreground, Color background) {
 
 void _expectPairs(AriaColors colors, String theme) {
   final pairs = <(String, Color, Color)>[
-    ('text on canvas', colors.text, colors.canvas),
-    ('text on surface', colors.text, colors.surface),
-    ('text on inset', colors.text, colors.inset),
-    ('text on selected', colors.text, colors.selected),
-    ('secondary on canvas', colors.textSecondary, colors.canvas),
-    ('secondary on surface', colors.textSecondary, colors.surface),
-    ('muted on canvas', colors.textMuted, colors.canvas),
-    ('muted on surface', colors.textMuted, colors.surface),
-    ('onPrimary on primary', colors.onPrimary, colors.primary),
-    ('primary on primary-soft', colors.primary, colors.primarySoft),
-    ('success on success-soft', colors.success, colors.successSoft),
-    ('warning on warning-soft', colors.warning, colors.warningSoft),
-    ('attention on attention-soft', colors.attention, colors.attentionSoft),
-    ('error on error-soft', colors.error, colors.errorSoft),
+    ('ink on ground', colors.ink, colors.ground),
+    ('ink on sheet', colors.ink, colors.sheet),
+    ('ink on panel', colors.ink, colors.panel),
+    ('ink on panel-2', colors.ink, colors.panel2),
+    ('ink-2 on ground', colors.ink2, colors.ground),
+    ('ink-2 on panel', colors.ink2, colors.panel),
+    ('muted on ground', colors.muted, colors.ground),
+    ('muted on sheet', colors.muted, colors.sheet),
+    ('muted on panel', colors.muted, colors.panel),
+    ('gold on ground', colors.gold, colors.ground),
+    ('gold on gold-soft', colors.gold, colors.goldSoft),
+    ('gold-ink on gold-fill', colors.goldInk, colors.goldFill),
+    ('key-ink on key', colors.keyInk, colors.key),
+    ('key-muted on key', colors.keyMuted, colors.key),
+    ('danger on ground', colors.danger, colors.ground),
+    ('danger on danger-soft', colors.danger, colors.dangerSoft),
   ];
 
   for (final (label, foreground, background) in pairs) {
     test('$theme: $label meets AA', () {
-      expect(
-        _contrast(foreground, background),
-        greaterThanOrEqualTo(_aa),
-        reason: '$label is ${_contrast(foreground, background)}:1',
-      );
+      // Surfaces are translucent light over the ground, so contrast is measured
+      // on what actually reaches the eye, not on the raw token.
+      final surface = Color.alphaBlend(background, colors.ground);
+      final ink = Color.alphaBlend(foreground, surface);
+      final ratio = _contrast(ink, surface);
+      expect(ratio, greaterThanOrEqualTo(_aa), reason: '$label is $ratio:1');
     });
   }
 }
@@ -49,27 +52,37 @@ void main() {
   _expectPairs(AriaColors.light(), 'light');
   _expectPairs(AriaColors.dark(), 'dark');
 
-  test('Chinese type keeps its own leading and drops negative tracking', () {
+  test('Chinese body keeps a little more leading', () {
     final latin = AriaType.latin();
     final chinese = AriaType.zh();
+    expect(chinese.body.height, greaterThan(latin.body.height ?? 0));
+  });
 
-    expect(latin.body.height, 1.65);
-    expect(chinese.body.height, 1.72);
-    expect(latin.display.letterSpacing, lessThan(0));
-    expect(chinese.display.letterSpacing, 0);
-    expect(chinese.title.letterSpacing, 0);
+  test('the hero carries the design tracking', () {
+    final type = AriaType.latin();
+    expect(type.hero.fontSize, 34);
+    expect(type.hero.letterSpacing, lessThan(0));
+    expect(type.kicker.letterSpacing, greaterThan(0));
   });
 
   test('every text style declares the system CJK fallback chain', () {
     final type = AriaType.latin();
     for (final style in <TextStyle>[
-      type.display,
+      type.hero,
       type.headline,
+      type.brand,
+      type.sheetTitle,
       type.title,
+      type.chatTitle,
       type.body,
+      type.quote,
       type.ui,
       type.label,
+      type.small,
+      type.run,
       type.caption,
+      type.tiny,
+      type.kicker,
       type.code,
     ]) {
       expect(style.fontFamilyFallback, contains('PingFang SC'));

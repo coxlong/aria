@@ -64,7 +64,7 @@
   "language": "语言",
   "languageSystem": "跟随系统",
   "languageEnglish": "English",
-  "languageChinese": "简体中文",
+  "languageChinese": "中文",
   "errorNetwork": "连不上这个执行端。检查地址与网络。",
   "errorAuth": "执行端拒绝了令牌。",
   "errorProtocol": "这个端点不是在说 ACP v1。",
@@ -82,13 +82,20 @@
   "errorRefused": "执行端拒绝继续，换个说法或调整做法。",
   "errorTruncated": "回答达到模型的 token 上限，被截断了。",
   "retry": "重试",
-  "connectSubtitle": "选择一个执行端连接。",
+  "connectSubtitle": "选一个 Agent 连接。",
   "connect": "连接",
   "connecting": "连接中…",
   "connected": "已连接",
   "disconnected": "已断开",
+  "connectFirstAgent": "先接上一个 Agent",
+  "connectFirstAgentBody": "添加一个执行端，Aria 才能开始做事。",
+  "connectAria": "连接 Aria",
+  "connectingAria": "正在连接 Aria",
+  "connectionFailed": "连接失败",
+  "changeAgent": "切换",
+  "chooseAgent": "选择 Agent",
   "reconnectingShort": "重连中",
-  "manageExecutors": "管理执行端",
+  "manageExecutors": "管理 Agent",
   "newChat": "新对话",
   "sessions": "最近",
   "noSessions": "还没有会话。",
@@ -110,5 +117,250 @@
         "type": "int"
       }
     }
-  }
+  },
+  "heroQuestion": "要做什么，直接说。",
+  "homeComposeHint": "描述任务，开启新对话",
+  "startConversation": "开始新对话",
+  "recentConversations": "最近对话",
+  "takesThis": "由 {name} 接",
+  "@takesThis": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "noConversations": "还没有对话。从一件具体的小事开始。",
+  "searchConversations": "搜索对话",
+  "findConversation": "搜索",
+  "searchKicker": "搜索",
+  "searchHint": "输入关键词",
+  "noSearchResults": "没有找到「{query}」。换个词试试。",
+  "@noSearchResults": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "conversations": "对话",
+  "youPrefix": "你：",
+  "newConversation": "新对话",
+  "now": "现在",
+  "minutesAgo": "{count} 分钟前",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{count} 小时前",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsKicker": "ARIA",
+  "theme": "主题",
+  "themeDark": "深色",
+  "themeLight": "浅色",
+  "themeSystem": "跟随",
+  "agents": "Agent",
+  "agent": "Agent",
+  "addAgent": "添加 Agent",
+  "agentName": "名称",
+  "agentNameHint": "比如：查",
+  "agentNameTaken": "这个名字已经用过了",
+  "tokenOptionalHint": "留空表示不需要",
+  "agentDesc": "负责什么",
+  "agentDescHint": "一句话就够",
+  "agentDefault": "默认",
+  "makeDefault": "设为默认",
+  "connectThisAgent": "连接这个 Agent",
+  "defaultSet": "已将 {name} 设为默认",
+  "@defaultSet": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "defaultCannotDelete": "默认不能删，先把下一个设为默认",
+  "disconnectToDelete": "断开连接后才能删除这个 Agent。",
+  "add": "添加",
+  "agentAdded": "加了 {name}",
+  "@agentAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "agentDeleted": "已删除 {name}",
+  "@agentDeleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "agentSaved": "配置已保存",
+  "agentLocked": "连接中不能改地址、Token 和目录。断开后可修改。",
+  "disconnect": "断开连接",
+  "disconnectedKept": "已断开 · 对话已保留",
+  "disconnectConfirm": "断开与 {name} 的连接？",
+  "@disconnectConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "done": "完成",
+  "close": "关闭",
+  "backToSettings": "返回设置",
+  "connectTitle": "连接执行端",
+  "noAgents": "还没有 Agent。",
+  "currentAgent": "当前 Agent",
+  "workingNote": "正在做…",
+  "liveStep": "正在{name}…",
+  "@liveStep": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "thinkingNow": "正在思考…",
+  "replyingNow": "正在回…",
+  "needsApproval": "等你授权",
+  "needsApprovalWith": "等你授权：{prompt}",
+  "@needsApprovalWith": {
+    "placeholders": {
+      "prompt": {
+        "type": "String"
+      }
+    }
+  },
+  "waitingForYou": "等你回一句",
+  "stoppedNotice": "已停止 · 已保留上面的内容。",
+  "jumpLatest": "回到最新",
+  "composerPlaceholder": "继续补充…",
+  "composerLabel": "给 Aria 发消息",
+  "stopToast": "已停止",
+  "turnRunningToast": "这一轮还在跑；先停止，或等它结束。",
+  "workLog": "执行记录",
+  "thought": "思考",
+  "statusDone": "完成",
+  "statusRunning": "进行中",
+  "statusFailed": "失败",
+  "statusPending": "等待",
+  "statusStopped": "已停止",
+  "statusSkipped": "已跳过",
+  "toolsUsed": "用了 {count} 个工具",
+  "@toolsUsed": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "thoughtsCount": "{count} 段思考",
+  "@thoughtsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "thoughtsCountSuffix": "，{count} 段思考",
+  "@thoughtsCountSuffix": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "failedCountSuffix": " · {count} 处失败",
+  "@failedCountSuffix": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "failedSuffix": " · 失败",
+  "stepsCount": "{count} 步",
+  "@stepsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "andMoreSteps": "等 {count} 步",
+  "@andMoreSteps": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "andMore": "等",
+  "listSeparator": "、",
+  "stepError": "错误",
+  "backToWorkLog": "返回执行记录",
+  "workLogGone": "这段执行记录不在了",
+  "stepGone": "这一步不在记录里了",
+  "thoughtGone": "这段思考不在了",
+  "modelEffortMode": "模型与执行方式",
+  "thisTurn": "本轮设置",
+  "reasoningEffort": "推理强度",
+  "appliesNextTurn": "下一轮生效。",
+  "noModels": "此执行端未提供模型选择。",
+  "noEfforts": "此执行端未提供推理强度。",
+  "noModes": "此执行端未提供模式。",
+  "modelChipLabel": "模型 {model}，推理强度 {effort}，模式 {mode}",
+  "@modelChipLabel": {
+    "placeholders": {
+      "model": {
+        "type": "String"
+      },
+      "effort": {
+        "type": "String"
+      },
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "approvalKicker": "等待授权",
+  "command": "命令",
+  "approvalDetail": "详情",
+  "riskNote": "这条命令会修改工作区之外的内容，执行后不能撤销。",
+  "cancelThis": "取消这次",
+  "optionAllowOnce": "只这次运行",
+  "optionAllowAlways": "以后同类命令不再问",
+  "optionRejectOnce": "这次不运行",
+  "optionRejectAlways": "以后同类命令都拒绝",
+  "requestClosed": "这个请求已经处理过了",
+  "connectionLost": "与执行端的连接断了 · 正在重连，恢复后自动补发。",
+  "connectionOffline": "离线",
+  "notConnected": "未连接",
+  "onWatch": "值守中",
+  "connectToStart": "连接执行端后开始。",
+  "edit": "编辑",
+  "deleteAgentConfirm": "删除「{name}」？删了就找不回来。",
+  "@deleteAgentConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "relink": "重新连接",
+  "sessionRefreshing": "正在刷新…"
 }

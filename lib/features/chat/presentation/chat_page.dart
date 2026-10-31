@@ -1,128 +1,132 @@
 import 'dart:async';
 
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
-import '../../../core/error/error_text.dart';
 import '../../../core/theme/aria_colors.dart';
 import '../../../core/theme/aria_tokens.dart';
 import '../../../core/theme/aria_type.dart';
-import '../../../core/widgets/aria_composer.dart';
-import '../../../core/widgets/aria_error_line.dart';
-import '../../../core/widgets/connection_note.dart';
-import '../../../domain/profile/server_profile.dart';
+import '../../../core/widgets/aria_sheet.dart';
+import '../../../core/widgets/aria_toast.dart';
+import '../../../core/widgets/aria_viewport.dart';
+import '../../../core/widgets/connection_banner.dart';
+import '../../../domain/chat/chat_session.dart';
+import '../../../domain/session/agent_connection.dart';
+import '../../../domain/session/agent_session.dart';
+import '../../../domain/session/session_ref.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../connection/application/connection_controller.dart';
-import '../application/chat_controller.dart';
-import '../application/chat_view.dart';
+import '../../connection/application/agent_manager.dart';
 import 'widgets/message_list.dart';
 import 'widgets/permission_sheet.dart';
 import 'widgets/selector_sheet.dart';
-import 'widgets/session_panel.dart';
 
-/// The workspace: sessions on the left, one conversation in the middle, the
-/// composer at the bottom.
+/// One conversation: what was said, what is being done, and the one input.
 class ChatPage extends ConsumerStatefulWidget {
-  const ChatPage({super.key});
+  const ChatPage({super.key, this.initialText});
+
+  /// The first message of a conversation started from home.
+  final String? initialText;
 
   @override
   ConsumerState<ChatPage> createState() => _ChatPageState();
 }
 
 class _ChatPageState extends ConsumerState<ChatPage> {
-  final GlobalKey<ScaffoldState> _scaffold = GlobalKey<ScaffoldState>();
-
   /// The decision currently on screen, so a rebuild never opens a second one.
   String? _showingDecisionId;
+  bool _sentInitial = false;
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.ariaColors;
-    final connection = ref.watch(connectionProvider);
-    final session = connection.session;
+    final l10n = AppLocalizations.of(context);
 
-    // The route guard sends the person back to /connect when the session goes
-    // away; this only covers the frame before that happens.
-    if (session == null) return const Scaffold(body: SizedBox.shrink());
+    // Only this conversation's state is watched. Drafts and other sessions
+    // change the manager without rebuilding this page.
+    final view = ref.watch(
+      agentManagerProvider.select(
+        (state) => (
+          agent: state.activeAgent,
+          sessionRef: state.activeSessionRef,
+          chat: state.activeSession,
+        ),
+      ),
+    );
+    final agent = view.agent;
+    final sessionRef = view.sessionRef;
+    final chat = view.chat;
 
-    final chat = ref.watch(chatProvider(session.id));
-    _syncPermission(connection);
+    // The route guard sends the person back when this agent disconnects; this
+    // only covers the frame before that happens.
+    if (agent == null || sessionRef == null || chat == null) {
+      return const SizedBox.shrink();
+    }
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final wide = constraints.maxWidth >= 720;
-        final panelWidth = constraints.maxWidth >= 1100 ? 320.0 : 240.0;
+    _syncDecision(sessionRef, chat);
+    _maybeSendInitial(sessionRef);
 
-        return Scaffold(
-          key: _scaffold,
-          drawer: wide
-              ? null
-              : Drawer(
-                  width: constraints.maxWidth * 0.82,
-                  backgroundColor: colors.canvas,
-                  child: SessionPanel(
-                    onNavigate: () => Navigator.of(context).maybePop(),
-                  ),
-                ),
-          body: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              if (wide) ...<Widget>[
-                SizedBox(width: panelWidth, child: const SessionPanel()),
-                VerticalDivider(width: 1, color: colors.border),
-              ],
-              Expanded(
-                child: SafeArea(
-                  left: false,
-                  child: Column(
-                    children: <Widget>[
-                      _TopBar(
-                        compact: !wide,
-                        onMenu: () => _scaffold.currentState?.openDrawer(),
-                      ),
-                      Expanded(
-                        child: Center(
-                          child: ConstrainedBox(
-                            constraints: const BoxConstraints(
-                              maxWidth: AriaSpacing.readingColumn,
-                            ),
-                            child: MessageList(
-                              // A new session starts at its own top rather than
-                              // inheriting the previous session's scroll offset.
-                              key: ValueKey<String>(session.id),
-                              view: chat,
-                            ),
-                          ),
-                        ),
-                      ),
-                      if (connection.status == ConnectionStatus.reconnecting)
-                        ConnectionNote(
-                          message: AppLocalizations.of(context).reconnecting,
-                        ),
-                      if (chat.error != null || connection.error != null)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: AriaSpacing.md,
-                          ),
-                          child: AriaErrorLine(
-                            error: chat.error ?? connection.error!,
-                          ),
-                        ),
-                      _ComposerBar(chat: chat, connection: connection),
-                    ],
-                  ),
-                ),
-              ),
-            ],
+    final summary = _summaryOf(agent.sessions, sessionRef.sessionId);
+    final pending = chat.pendingDecision;
+    final title = summary != null && summary.hasTitle
+        ? summary.title
+        : l10n.newConversation;
+
+    return AriaViewport(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          _ChatTopBar(
+            title: title,
+            onBack: () =>
+                context.canPop() ? context.pop() : context.go('/home'),
+            onDecision: pending == null
+                ? null
+                : () => _openDecision(sessionRef, chat),
           ),
-        );
-      },
+          if (agent.status == AgentStatus.reconnecting)
+            const ConnectionBanner(),
+          Expanded(
+            child: MessageList(
+              key: ValueKey<SessionRef>(sessionRef),
+              session: chat,
+            ),
+          ),
+          _ComposerBar(
+            key: ValueKey<SessionRef>(sessionRef),
+            agent: agent,
+            chat: chat,
+            sessionRef: sessionRef,
+          ),
+        ],
+      ),
     );
   }
 
-  /// Opens the approval sheet for the head of the decision queue, once.
-  void _syncPermission(ConnectionSnapshot connection) {
-    final decision = connection.pendingDecision;
+  static AgentSessionSummary? _summaryOf(
+    List<AgentSessionSummary> sessions,
+    String id,
+  ) {
+    for (final summary in sessions) {
+      if (summary.id == id) return summary;
+    }
+    return null;
+  }
+
+  void _maybeSendInitial(SessionRef sessionRef) {
+    final text = widget.initialText?.trim();
+    if (_sentInitial || text == null || text.isEmpty) return;
+    _sentInitial = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      unawaited(ref.read(agentManagerProvider.notifier).send(sessionRef, text));
+    });
+  }
+
+  /// Opens the approval sheet for the head of this session's decision queue,
+  /// once.
+  void _syncDecision(SessionRef sessionRef, ChatSession chat) {
+    final decision = chat.pendingDecision;
     if (decision == null) {
       _showingDecisionId = null;
       return;
@@ -130,7 +134,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     if (_showingDecisionId == decision.id) return;
     _showingDecisionId = decision.id;
 
-    final queued = connection.queuedDecisions;
+    final queued = chat.queuedDecisions;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       unawaited(
@@ -138,253 +142,450 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           context,
           decision,
           queued: queued,
-          onAnswer: (option) =>
-              unawaited(ref.read(connectionProvider.notifier).answer(option)),
+          onAnswer: (option) => unawaited(
+            ref.read(agentManagerProvider.notifier).answer(sessionRef, option),
+          ),
         ).whenComplete(() {
           if (!mounted) return;
-          // The sheet is gone. If another decision's sheet opened in the
-          // meantime it owns the marker now, so leave it alone.
           if (_showingDecisionId != decision.id) return;
           _showingDecisionId = null;
           // A failed answer leaves the decision open; ask again rather than
           // pretending it was delivered.
-          if (ref.read(connectionProvider).pendingDecision?.id == decision.id) {
-            setState(() {});
-          }
+          final current = ref
+              .read(agentManagerProvider)
+              .session(sessionRef)
+              .pendingDecision;
+          if (current?.id == decision.id) setState(() {});
         }),
       );
     });
   }
-}
 
-class _TopBar extends ConsumerWidget {
-  const _TopBar({required this.compact, required this.onMenu});
-
-  final bool compact;
-  final VoidCallback onMenu;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context);
-    final colors = context.ariaColors;
-    final connection = ref.watch(connectionProvider);
-    final session = connection.session;
-    final turns = session == null
-        ? 0
-        : ref.watch(chatProvider(session.id)).turns.length;
-
-    return SizedBox(
-      height: 56,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AriaSpacing.xs),
-        child: Row(
-          children: <Widget>[
-            if (compact)
-              IconButton(
-                tooltip: l10n.sessions,
-                onPressed: onMenu,
-                icon: const Icon(Icons.segment_rounded),
-                color: colors.textMuted,
-              ),
-            if (compact)
-              Expanded(
-                child: Text(
-                  connection.profile?.displayName ?? l10n.appName,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: context.ariaType.title.copyWith(color: colors.text),
-                ),
-              )
-            else
-              const Spacer(),
-            _ConnectionBadge(status: connection.status),
-            const SizedBox(width: AriaSpacing.xs),
-            if (turns > 0)
-              IconButton(
-                tooltip: l10n.newChat,
-                onPressed: () => unawaited(
-                  ref.read(connectionProvider.notifier).newSession(),
-                ),
-                icon: const Icon(Icons.auto_awesome_rounded, size: 20),
-                color: colors.primary,
-              ),
-          ],
+  void _openDecision(SessionRef sessionRef, ChatSession chat) {
+    final decision = chat.pendingDecision;
+    if (decision == null) return;
+    if (_showingDecisionId == decision.id) return;
+    _showingDecisionId = decision.id;
+    final queued = chat.queuedDecisions;
+    unawaited(
+      showPermission(
+        context,
+        decision,
+        queued: queued,
+        onAnswer: (option) => unawaited(
+          ref.read(agentManagerProvider.notifier).answer(sessionRef, option),
         ),
-      ),
+      ).whenComplete(() {
+        if (!mounted) return;
+        if (_showingDecisionId != decision.id) return;
+        _showingDecisionId = null;
+        final current = ref
+            .read(agentManagerProvider)
+            .session(sessionRef)
+            .pendingDecision;
+        if (current?.id == decision.id) setState(() {});
+      }),
     );
   }
 }
 
-class _ConnectionBadge extends StatelessWidget {
-  const _ConnectionBadge({required this.status});
+class _ChatTopBar extends StatelessWidget {
+  const _ChatTopBar({
+    required this.title,
+    required this.onBack,
+    required this.onDecision,
+  });
 
-  final ConnectionStatus status;
+  final String title;
+  final VoidCallback onBack;
+  final VoidCallback? onDecision;
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
     final colors = context.ariaColors;
-
-    final (color, label) = switch (status) {
-      ConnectionStatus.connected => (colors.primary, l10n.connected),
-      ConnectionStatus.connecting => (colors.textMuted, l10n.connecting),
-      ConnectionStatus.reconnecting => (
-        colors.textMuted,
-        l10n.reconnectingShort,
-      ),
-      ConnectionStatus.failed => (colors.error, l10n.disconnected),
-      ConnectionStatus.idle => (colors.textMuted, l10n.disconnected),
-    };
-
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        SizedBox(
-          width: 8,
-          height: 8,
-          child: DecoratedBox(
-            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+    final type = context.ariaType;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(18, 2, 18, 8),
+      child: Row(
+        children: <Widget>[
+          AriaIconButton(
+            icon: Icons.chevron_left_rounded,
+            label: MaterialLocalizations.of(context).backButtonTooltip,
+            onTap: onBack,
           ),
-        ),
-        const SizedBox(width: AriaSpacing.xxs),
-        Text(label, style: context.ariaType.caption.copyWith(color: color)),
-      ],
+          Expanded(
+            child: Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: type.chatTitle.copyWith(color: colors.ink),
+            ),
+          ),
+          if (onDecision != null)
+            AriaIconButton(
+              icon: Icons.error_outline_rounded,
+              label: AppLocalizations.of(context).needsApproval,
+              onTap: onDecision,
+              active: true,
+            )
+          else
+            const SizedBox(width: ariaMinTarget),
+        ],
+      ),
     );
   }
 }
 
 class _ComposerBar extends ConsumerWidget {
-  const _ComposerBar({required this.chat, required this.connection});
+  const _ComposerBar({
+    super.key,
+    required this.agent,
+    required this.chat,
+    required this.sessionRef,
+  });
 
-  final ChatView chat;
-  final ConnectionSnapshot connection;
+  final AgentConnection agent;
+  final ChatSession chat;
+  final SessionRef sessionRef;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final surfaces = connection.surfaces;
+    final surfaces = chat.surfaces;
+    final showOptions =
+        surfaces.hasModels || surfaces.hasEfforts || surfaces.hasModes;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AriaSpacing.md,
-        AriaSpacing.xs,
-        AriaSpacing.md,
-        AriaSpacing.md,
-      ),
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxWidth: AriaSpacing.readingColumn,
-          ),
-          child: AriaComposer(
-            hint: l10n.composerHint,
-            running: chat.running,
-            enabled: connection.isConnected,
-            onStop: () => unawaited(
-              ref.read(chatProvider(chat.sessionId).notifier).stop(),
+      padding: const EdgeInsets.fromLTRB(AriaSpacing.md, 2, AriaSpacing.md, 6),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          if (showOptions)
+            _ModelRow(
+              surfaces: surfaces,
+              enabled: agent.isConnected,
+              onTap: () => showModelSheet(context),
             ),
-            onSubmit: (text) =>
-                ref.read(chatProvider(chat.sessionId).notifier).send(text),
-            chips: <Widget>[
-              if (surfaces?.hasModels ?? false)
-                _OptionChip(
-                  // The agent may offer models without naming the current one;
-                  // the chip then reads "Model" instead of inventing a choice.
-                  label: surfaces!.modelLabel ?? l10n.model,
-                  onTap: () => _pickModel(context, ref),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+              Expanded(
+                child: _ComposerBox(
+                  running: chat.running,
+                  enabled: agent.isConnected,
+                  hint: l10n.composerPlaceholder,
+                  label: l10n.composerLabel,
+                  sendLabel: l10n.send,
+                  stopLabel: l10n.stop,
+                  initialDraft: ref
+                      .read(agentManagerProvider)
+                      .draft(sessionRef),
+                  onDraftChanged: (text) => ref
+                      .read(agentManagerProvider.notifier)
+                      .setDraft(sessionRef, text),
+                  onSend: (text) => ref
+                      .read(agentManagerProvider.notifier)
+                      .send(sessionRef, text),
+                  onStop: () {
+                    showAriaToast(l10n.stopToast);
+                    unawaited(
+                      ref.read(agentManagerProvider.notifier).stop(sessionRef),
+                    );
+                  },
                 ),
-              if (surfaces?.hasModes ?? false)
-                _OptionChip(
-                  label: surfaces!.modeLabel ?? l10n.mode,
-                  onTap: () => _pickMode(context, ref),
-                ),
+              ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _pickModel(BuildContext context, WidgetRef ref) async {
-    final surfaces = ref.read(connectionProvider).surfaces;
-    if (surfaces == null) return;
-    final picked = await showModelSheet(context: context, surfaces: surfaces);
-    if (picked == null) return;
-
-    final notifier = ref.read(connectionProvider.notifier);
-    if (picked.modelId != null) await notifier.selectModel(picked.modelId!);
-    if (picked.effortValue != null) {
-      await notifier.selectEffort(picked.effortValue!);
-    }
-    if (!context.mounted) return;
-    _reportFailure(context, ref);
-  }
-
-  Future<void> _pickMode(BuildContext context, WidgetRef ref) async {
-    final current = ref.read(connectionProvider).surfaces;
-    if (current == null) return;
-    final picked = await showOptionSheet(
-      context: context,
-      title: AppLocalizations.of(context).mode,
-      options: current.modes,
-      selectedId: current.currentModeId,
-    );
-    if (picked == null) return;
-    await ref.read(connectionProvider.notifier).selectMode(picked);
-    if (!context.mounted) return;
-    _reportFailure(context, ref);
-  }
-
-  /// Selector failures are otherwise invisible: the sheet has already closed.
-  void _reportFailure(BuildContext context, WidgetRef ref) {
-    final error = ref.read(connectionProvider).error;
-    if (error == null) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(describeError(AppLocalizations.of(context), error)),
+        ],
       ),
     );
   }
 }
 
-class _OptionChip extends StatelessWidget {
-  const _OptionChip({required this.label, required this.onTap});
+class _ModelRow extends StatelessWidget {
+  const _ModelRow({
+    required this.surfaces,
+    required this.enabled,
+    required this.onTap,
+  });
 
-  final String? label;
+  final SessionSurfaces surfaces;
+  final bool enabled;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final colors = context.ariaColors;
-    if (label == null) return const SizedBox.shrink();
+    final type = context.ariaType;
 
-    return Material(
-      color: colors.inset,
-      borderRadius: AriaRadius.pillAll,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: AriaRadius.pillAll,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 110, minHeight: 28),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AriaSpacing.sm,
-              vertical: AriaSpacing.xxs,
+    final model = surfaces.hasModels
+        ? (surfaces.modelLabel ?? l10n.model)
+        : null;
+    final effort = surfaces.hasEfforts ? surfaces.effortLabel : null;
+    final mode = surfaces.hasModes ? (surfaces.modeLabel ?? l10n.mode) : null;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(2, 0, 2, 2),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Material(
+                color: Colors.transparent,
+                borderRadius: AriaRadius.smAll,
+                child: InkWell(
+                  onTap: enabled ? onTap : null,
+                  borderRadius: AriaRadius.smAll,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: ariaMinTarget),
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: AriaSpacing.xs),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Flexible(
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                if (model != null)
+                                  Flexible(
+                                    child: Text(
+                                      model,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: type.tiny.copyWith(
+                                        color: enabled
+                                            ? colors.muted
+                                            : colors.muted.withValues(
+                                                alpha: 0.45,
+                                              ),
+                                        letterSpacing: 0,
+                                      ),
+                                    ),
+                                  ),
+                                if (effort != null) ...<Widget>[
+                                  Text(
+                                    ' · ',
+                                    style: type.tiny.copyWith(
+                                      color: colors.muted,
+                                      letterSpacing: 0,
+                                    ),
+                                  ),
+                                  Flexible(
+                                    child: Text(
+                                      effort,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: type.tiny.copyWith(
+                                        color: enabled
+                                            ? colors.ink2
+                                            : colors.muted.withValues(
+                                                alpha: 0.45,
+                                              ),
+                                        fontWeight: FontWeight.w600,
+                                        letterSpacing: 0,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                          if (mode != null) ...<Widget>[
+                            const SizedBox(width: 12),
+                            Flexible(
+                              child: Text(
+                                mode,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: type.tiny.copyWith(
+                                  color: enabled
+                                      ? colors.muted
+                                      : colors.muted.withValues(alpha: 0.45),
+                                  letterSpacing: 0,
+                                ),
+                              ),
+                            ),
+                          ],
+                          const SizedBox(width: 4),
+                          Icon(
+                            Icons.chevron_right_rounded,
+                            size: 13,
+                            color: colors.muted,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ),
-            child: Center(
-              widthFactor: 1,
-              child: Text(
-                label!,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: context.ariaType.caption.copyWith(
-                  color: colors.textSecondary,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ComposerBox extends StatefulWidget {
+  const _ComposerBox({
+    required this.running,
+    required this.enabled,
+    required this.hint,
+    required this.label,
+    required this.sendLabel,
+    required this.stopLabel,
+    required this.initialDraft,
+    required this.onDraftChanged,
+    required this.onSend,
+    required this.onStop,
+  });
+
+  final bool running;
+  final bool enabled;
+  final String hint;
+  final String label;
+  final String sendLabel;
+  final String stopLabel;
+
+  /// The draft this conversation was left with. Read once; after that the
+  /// controller and the manager stay in step through [onDraftChanged].
+  final String initialDraft;
+
+  final ValueChanged<String> onDraftChanged;
+  final Future<bool> Function(String text) onSend;
+  final VoidCallback onStop;
+
+  @override
+  State<_ComposerBox> createState() => _ComposerBoxState();
+}
+
+class _ComposerBoxState extends State<_ComposerBox> {
+  final TextEditingController _controller = TextEditingController();
+  final FocusNode _focus = FocusNode();
+  bool _focused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialDraft.isNotEmpty) {
+      _controller.text = widget.initialDraft;
+      _controller.selection = TextSelection.collapsed(
+        offset: _controller.text.length,
+      );
+    }
+    _controller.addListener(_onChanged);
+    _focus.addListener(_onFocusChanged);
+  }
+
+  @override
+  void dispose() {
+    _controller.removeListener(_onChanged);
+    _focus.removeListener(_onFocusChanged);
+    _controller.dispose();
+    _focus.dispose();
+    super.dispose();
+  }
+
+  void _onChanged() {
+    widget.onDraftChanged(_controller.text);
+    setState(() {});
+  }
+
+  void _onFocusChanged() {
+    if (_focused != _focus.hasFocus) setState(() => _focused = _focus.hasFocus);
+  }
+
+  bool get _canSend => widget.enabled && _controller.text.trim().isNotEmpty;
+
+  Future<void> _submit() async {
+    if (!_canSend || widget.running) return;
+    final text = _controller.text.trim();
+    final accepted = await widget.onSend(text);
+    if (!mounted || !accepted) return;
+    _controller.clear();
+    _focus.requestFocus();
+  }
+
+  KeyEventResult _onKey(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent) return KeyEventResult.ignored;
+    final isEnter = event.logicalKey == LogicalKeyboardKey.enter;
+    final isNumpad = event.logicalKey == LogicalKeyboardKey.numpadEnter;
+    if (!isEnter && !isNumpad) return KeyEventResult.ignored;
+    if (HardwareKeyboard.instance.isShiftPressed) {
+      return KeyEventResult.ignored;
+    }
+    unawaited(_submit());
+    return KeyEventResult.handled;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.ariaColors;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: <Widget>[
+        Expanded(
+          child: AnimatedContainer(
+            duration: AriaMotion.fast,
+            curve: AriaMotion.ease,
+            constraints: const BoxConstraints(minHeight: 50),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+              color: colors.panel2,
+              borderRadius: AriaRadius.composerAll,
+              border: Border.all(
+                color: _focused ? colors.focus : Colors.transparent,
+                width: 2,
+              ),
+            ),
+            child: Focus(
+              onKeyEvent: _onKey,
+              child: Semantics(
+                label: widget.label,
+                child: TextField(
+                  key: const ValueKey<String>('chat-compose-input'),
+                  controller: _controller,
+                  focusNode: _focus,
+                  enabled: widget.enabled,
+                  minLines: 1,
+                  maxLines: 5,
+                  textInputAction: TextInputAction.newline,
+                  keyboardType: TextInputType.multiline,
+                  style: context.ariaType.body.copyWith(color: colors.ink),
+                  cursorColor: colors.gold,
+                  decoration: InputDecoration(
+                    isDense: true,
+                    filled: false,
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    disabledBorder: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                    hintText: widget.hint,
+                    hintStyle: context.ariaType.body.copyWith(
+                      color: colors.muted,
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
         ),
-      ),
+        const SizedBox(width: 10),
+        AriaSendButton(
+          key: const ValueKey<String>('chat-send'),
+          running: widget.running,
+          enabled: _canSend,
+          sendLabel: widget.sendLabel,
+          stopLabel: widget.stopLabel,
+          onSend: () => unawaited(_submit()),
+          onStop: widget.onStop,
+        ),
+      ],
     );
   }
 }

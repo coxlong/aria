@@ -22,6 +22,20 @@ enum StepKind {
   thought,
 }
 
+/// The protocol's tool category, normalised so the interface can pick a glyph
+/// without reading the tool's title.
+enum ToolAction {
+  read,
+  edit,
+  delete,
+  move,
+  search,
+  execute,
+  fetch,
+  think,
+  other,
+}
+
 /// One row in the process sheet.
 @freezed
 abstract class WorkStep with _$WorkStep {
@@ -30,6 +44,7 @@ abstract class WorkStep with _$WorkStep {
     required String title,
     required StepStatus status,
     @Default(StepKind.tool) StepKind kind,
+    @Default(ToolAction.other) ToolAction action,
     String? detail,
     String? input,
     String? output,

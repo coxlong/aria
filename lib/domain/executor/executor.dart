@@ -16,9 +16,6 @@ abstract interface class Executor {
   /// never read as a finished turn.
   Stream<ExecutorConnection> get connection;
 
-  /// The configuration surface of the open session.
-  SessionSurfaces get surfaces;
-
   Future<AgentCapabilities> connect();
 
   Future<List<AgentSessionSummary>> listSessions({String? cwd});
@@ -26,12 +23,14 @@ abstract interface class Executor {
   Future<AgentSession> openSession({required String id, required String cwd});
   Future<void> deleteSession(String id);
 
-  /// Starts forwarding this session's updates.
+  /// Whether the executor still holds this session's stream.
   ///
-  /// A resumed session buffers its replay until the caller attaches, so the
-  /// chat surface decides when history begins arriving — never before it can
-  /// render it.
-  void attach(String sessionId);
+  /// Reopening a session it holds is a switch, not a reload: the conversation
+  /// state already in memory stays exactly as it is.
+  bool holds(String sessionId);
+
+  /// The configuration surface of [sessionId].
+  SessionSurfaces surfacesOf(String sessionId);
 
   Future<void> prompt({required String sessionId, required String text});
   Future<void> cancel(String sessionId);
@@ -39,9 +38,9 @@ abstract interface class Executor {
   /// Answers a decision exactly once.
   Future<void> answer(DecisionAnswer answer);
 
-  Future<void> setModel(String id);
-  Future<void> setMode(String id);
-  Future<void> setConfigOption(String configId, String value);
+  Future<void> setModel(String sessionId, String id);
+  Future<void> setMode(String sessionId, String id);
+  Future<void> setConfigOption(String sessionId, String configId, String value);
 
   Future<void> dispose();
 }

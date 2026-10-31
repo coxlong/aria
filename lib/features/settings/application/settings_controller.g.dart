@@ -43,7 +43,7 @@ final class SettingsProvider extends $NotifierProvider<Settings, AppSettings> {
   }
 }
 
-String _$settingsHash() => r'fce18f618fe9d81888498515f6b607794bc664f6';
+String _$settingsHash() => r'13ecd34f28d02d685f1f3cf7e2791ceeb402b105';
 
 /// Profiles and language. Owns every write to preferences and secure storage.
 

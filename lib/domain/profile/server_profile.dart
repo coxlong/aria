@@ -14,6 +14,9 @@ abstract class ServerProfile with _$ServerProfile {
     required String name,
     required String url,
     @Default('') String cwd,
+
+    /// One line saying what this agent handles, shown in the agent list.
+    @Default('') String description,
   }) = _ServerProfile;
 
   factory ServerProfile.fromJson(Map<String, Object?> json) =>

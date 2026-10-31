@@ -133,7 +133,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get languageEnglish => 'English';
 
   @override
-  String get languageChinese => '简体中文';
+  String get languageChinese => '中文';
 
   @override
   String get errorNetwork =>
@@ -173,7 +173,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get retry => 'Retry';
 
   @override
-  String get connectSubtitle => 'Pick an executor to connect to.';
+  String get connectSubtitle => 'Pick an agent to connect to.';
 
   @override
   String get connect => 'Connect';
@@ -188,10 +188,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get disconnected => 'Disconnected';
 
   @override
+  String get connectFirstAgent => 'Add an agent first';
+
+  @override
+  String get connectFirstAgentBody => 'Add an endpoint, then Aria can start.';
+
+  @override
+  String get connectAria => 'Connect Aria';
+
+  @override
+  String get connectingAria => 'Connecting Aria';
+
+  @override
+  String get connectionFailed => 'Connection failed';
+
+  @override
+  String get changeAgent => 'Change';
+
+  @override
+  String get chooseAgent => 'Choose an agent';
+
+  @override
   String get reconnectingShort => 'Reconnecting';
 
   @override
-  String get manageExecutors => 'Manage executors';
+  String get manageExecutors => 'Manage agents';
 
   @override
   String get newChat => 'New chat';
@@ -245,4 +266,414 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get heroQuestion => 'What can Aria do for you?';
+
+  @override
+  String get homeComposeHint => 'Describe a task to start';
+
+  @override
+  String get startConversation => 'Start a conversation';
+
+  @override
+  String get recentConversations => 'Recent';
+
+  @override
+  String takesThis(String name) {
+    return '$name takes this';
+  }
+
+  @override
+  String get noConversations =>
+      'No conversations yet. Start with one specific task.';
+
+  @override
+  String get searchConversations => 'Search conversations';
+
+  @override
+  String get findConversation => 'Search';
+
+  @override
+  String get searchKicker => 'SEARCH';
+
+  @override
+  String get searchHint => 'Type a keyword';
+
+  @override
+  String noSearchResults(String query) {
+    return 'No match for “$query”. Try another word.';
+  }
+
+  @override
+  String get conversations => 'Conversations';
+
+  @override
+  String get youPrefix => 'You: ';
+
+  @override
+  String get newConversation => 'New conversation';
+
+  @override
+  String get now => 'now';
+
+  @override
+  String minutesAgo(int count) {
+    return '$count min ago';
+  }
+
+  @override
+  String hoursAgo(int count) {
+    return '$count hr ago';
+  }
+
+  @override
+  String get settingsKicker => 'ARIA';
+
+  @override
+  String get theme => 'Theme';
+
+  @override
+  String get themeDark => 'Dark';
+
+  @override
+  String get themeLight => 'Light';
+
+  @override
+  String get themeSystem => 'System';
+
+  @override
+  String get agents => 'Agents';
+
+  @override
+  String get agent => 'Agent';
+
+  @override
+  String get addAgent => 'Add an agent';
+
+  @override
+  String get agentName => 'Name';
+
+  @override
+  String get agentNameHint => 'e.g. Translate';
+
+  @override
+  String get agentNameTaken => 'That name is taken';
+
+  @override
+  String get tokenOptionalHint => 'Leave blank if none';
+
+  @override
+  String get agentDesc => 'What it handles';
+
+  @override
+  String get agentDescHint => 'One line is enough';
+
+  @override
+  String get agentDefault => 'Default';
+
+  @override
+  String get makeDefault => 'Make default';
+
+  @override
+  String get connectThisAgent => 'Connect this agent';
+
+  @override
+  String defaultSet(String name) {
+    return '$name is now the default';
+  }
+
+  @override
+  String get defaultCannotDelete =>
+      'The default cannot be deleted. Set another as default first.';
+
+  @override
+  String get disconnectToDelete => 'Disconnect before deleting this agent.';
+
+  @override
+  String get add => 'Add';
+
+  @override
+  String agentAdded(String name) {
+    return '$name added';
+  }
+
+  @override
+  String agentDeleted(String name) {
+    return '$name deleted';
+  }
+
+  @override
+  String get agentSaved => 'Configuration saved';
+
+  @override
+  String get agentLocked =>
+      'The address, token and directory are locked while connected. Disconnect to change them.';
+
+  @override
+  String get disconnect => 'Disconnect';
+
+  @override
+  String get disconnectedKept => 'Disconnected · conversations kept';
+
+  @override
+  String disconnectConfirm(String name) {
+    return 'Disconnect from $name?';
+  }
+
+  @override
+  String get done => 'Done';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get backToSettings => 'Settings';
+
+  @override
+  String get connectTitle => 'Connect an agent';
+
+  @override
+  String get noAgents => 'No agents yet.';
+
+  @override
+  String get currentAgent => 'Current agent';
+
+  @override
+  String get workingNote => 'Working…';
+
+  @override
+  String liveStep(String name) {
+    return 'Running $name…';
+  }
+
+  @override
+  String get thinkingNow => 'Thinking…';
+
+  @override
+  String get replyingNow => 'Replying…';
+
+  @override
+  String get needsApproval => 'Needs approval';
+
+  @override
+  String needsApprovalWith(String prompt) {
+    return 'Needs approval: $prompt';
+  }
+
+  @override
+  String get waitingForYou => 'Waiting for you';
+
+  @override
+  String get stoppedNotice => 'Stopped · what was produced is kept.';
+
+  @override
+  String get jumpLatest => 'Latest';
+
+  @override
+  String get composerPlaceholder => 'Add more detail…';
+
+  @override
+  String get composerLabel => 'Message Aria';
+
+  @override
+  String get stopToast => 'Stopped';
+
+  @override
+  String get turnRunningToast => 'This turn is still running. Stop it or wait.';
+
+  @override
+  String get workLog => 'Work log';
+
+  @override
+  String get thought => 'Thought';
+
+  @override
+  String get statusDone => 'Done';
+
+  @override
+  String get statusRunning => 'Running';
+
+  @override
+  String get statusFailed => 'Failed';
+
+  @override
+  String get statusPending => 'Pending';
+
+  @override
+  String get statusStopped => 'Stopped';
+
+  @override
+  String get statusSkipped => 'Skipped';
+
+  @override
+  String toolsUsed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tools',
+      one: '1 tool',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String thoughtsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count thoughts',
+      one: '1 thought',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String thoughtsCountSuffix(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count thoughts',
+      one: '1 thought',
+    );
+    return ', $_temp0';
+  }
+
+  @override
+  String failedCountSuffix(int count) {
+    return ' · $count failed';
+  }
+
+  @override
+  String get failedSuffix => ' · Failed';
+
+  @override
+  String stepsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count steps',
+      one: '1 step',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String andMoreSteps(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count steps',
+      one: '1 step',
+    );
+    return ' · $_temp0';
+  }
+
+  @override
+  String get andMore => '…';
+
+  @override
+  String get listSeparator => ', ';
+
+  @override
+  String get stepError => 'Error';
+
+  @override
+  String get backToWorkLog => 'Back to work log';
+
+  @override
+  String get workLogGone => 'This work log is gone';
+
+  @override
+  String get stepGone => 'This step is gone';
+
+  @override
+  String get thoughtGone => 'This thought is gone';
+
+  @override
+  String get modelEffortMode => 'Model and execution';
+
+  @override
+  String get thisTurn => 'THIS TURN';
+
+  @override
+  String get reasoningEffort => 'Reasoning effort';
+
+  @override
+  String get appliesNextTurn => 'Applies to the next turn.';
+
+  @override
+  String get noModels => 'This endpoint offers no model choice.';
+
+  @override
+  String get noEfforts => 'This endpoint offers no effort setting.';
+
+  @override
+  String get noModes => 'This endpoint offers no modes.';
+
+  @override
+  String modelChipLabel(String model, String effort, String mode) {
+    return 'Model $model, reasoning effort $effort, mode $mode';
+  }
+
+  @override
+  String get approvalKicker => 'APPROVAL';
+
+  @override
+  String get command => 'Command';
+
+  @override
+  String get approvalDetail => 'Details';
+
+  @override
+  String get riskNote =>
+      'This touches outside the workspace and cannot be undone.';
+
+  @override
+  String get cancelThis => 'Cancel this';
+
+  @override
+  String get optionAllowOnce => 'This run only';
+
+  @override
+  String get optionAllowAlways => 'Stop asking for this kind';
+
+  @override
+  String get optionRejectOnce => 'Do not run this time';
+
+  @override
+  String get optionRejectAlways => 'Refuse this kind from now on';
+
+  @override
+  String get requestClosed => 'This request is closed';
+
+  @override
+  String get connectionLost =>
+      'Connection lost · reconnecting; queued work replays automatically.';
+
+  @override
+  String get connectionOffline => 'Offline';
+
+  @override
+  String get notConnected => 'Not connected';
+
+  @override
+  String get onWatch => 'On watch';
+
+  @override
+  String get connectToStart => 'Connect an agent to start.';
+
+  @override
+  String get edit => 'Edit';
+
+  @override
+  String deleteAgentConfirm(String name) {
+    return 'Delete “$name”? This cannot be undone.';
+  }
+
+  @override
+  String get relink => 'Reconnect';
+
+  @override
+  String get sessionRefreshing => 'Refreshing…';
 }

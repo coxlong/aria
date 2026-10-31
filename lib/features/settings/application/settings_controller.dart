@@ -19,7 +19,9 @@ class Settings extends _$Settings {
     return AppSettings(
       profiles: repository.readAll(),
       activeProfileId: repository.readActiveId(),
+      connectProfileId: ref.watch(preferencesProvider).readConnectProfileId(),
       locale: ref.watch(preferencesProvider).readLocale(),
+      themeMode: ref.watch(preferencesProvider).readThemeMode(),
     );
   }
 
@@ -29,10 +31,12 @@ class Settings extends _$Settings {
     required String url,
     required String cwd,
     required String token,
+    String description = '',
   }) async {
     final profile = ServerProfile(
       id: _ids.v4(),
       name: name.trim(),
+      description: description.trim(),
       url: url.trim(),
       cwd: cwd.trim(),
     );
@@ -72,15 +76,27 @@ class Settings extends _$Settings {
 
     await _write(profiles, activeId);
     await ref.read(profileRepositoryProvider).deleteToken(id);
+    if (state.connectProfileId == id) await setConnectProfile(null);
   }
 
   Future<void> setActiveProfile(String id) async {
     await _write(state.profiles, id);
   }
 
+  /// Remembers who should answer next, without changing the default agent.
+  Future<void> setConnectProfile(String? id) async {
+    await ref.read(preferencesProvider).writeConnectProfileId(id);
+    state = state.copyWith(connectProfileId: id);
+  }
+
   Future<void> setLocale(String value) async {
     await ref.read(preferencesProvider).writeLocale(value);
     state = state.copyWith(locale: value);
+  }
+
+  Future<void> setThemeMode(String value) async {
+    await ref.read(preferencesProvider).writeThemeMode(value);
+    state = state.copyWith(themeMode: value);
   }
 
   /// Any saved profile with its token, for the executor.

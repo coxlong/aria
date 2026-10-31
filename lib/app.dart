@@ -1,7 +1,10 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
+import 'core/theme/aria_colors.dart';
 import 'core/theme/aria_theme.dart';
+import 'core/widgets/aria_toast.dart';
 import 'features/settings/application/settings_controller.dart';
 import 'l10n/app_localizations.dart';
 import 'router/app_router.dart';
@@ -45,6 +48,7 @@ class _AriaAppState extends ConsumerState<AriaApp> {
     return MaterialApp.router(
       onGenerateTitle: (context) => AppLocalizations.of(context).appName,
       debugShowCheckedModeBanner: false,
+      scaffoldMessengerKey: ariaMessenger,
       routerConfig: router,
       locale: override,
       supportedLocales: AppLocalizations.supportedLocales,
@@ -57,7 +61,26 @@ class _AriaAppState extends ConsumerState<AriaApp> {
       ],
       theme: buildAriaTheme(brightness: Brightness.light, chinese: chinese),
       darkTheme: buildAriaTheme(brightness: Brightness.dark, chinese: chinese),
-      themeMode: ThemeMode.system,
+      themeMode: switch (settings.themeMode) {
+        'light' => ThemeMode.light,
+        'dark' => ThemeMode.dark,
+        _ => ThemeMode.system,
+      },
+      builder: (context, child) {
+        final dark = Theme.of(context).brightness == Brightness.dark;
+        final colors = context.ariaColors;
+        return AnnotatedRegion<SystemUiOverlayStyle>(
+          value: (dark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark)
+              .copyWith(
+                statusBarColor: Colors.transparent,
+                systemNavigationBarColor: colors.ground,
+                systemNavigationBarIconBrightness: dark
+                    ? Brightness.light
+                    : Brightness.dark,
+              ),
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
     );
   }
 }

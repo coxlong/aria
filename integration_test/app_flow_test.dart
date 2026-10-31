@@ -12,8 +12,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../tool/fake_bridge.dart';
 
-/// Runs the real app against a scripted ACP bridge: connect, send, watch the
-/// work, answer the one decision, resume another session.
+/// Runs the real app against a scripted ACP bridge: connect, open a
+/// conversation, send a turn, watch the folded run, answer the one decision,
+/// and resume another session.
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
@@ -27,8 +28,6 @@ void main() {
     await bridge.close();
   });
 
-  /// Waits on the bridge's own state instead of guessing at a delay: the round
-  /// trip back to the script is not on any frame schedule.
   Future<bool> pumpUntilTrue(
     WidgetTester tester,
     bool Function() condition, {
@@ -61,11 +60,13 @@ void main() {
         <String, Object?>{
           'id': 'p1',
           'name': 'Local bridge',
+          'description': 'The scripted bridge for this flow.',
           'url': bridge.url,
           'cwd': '/work',
         },
       ]),
       'aria.locale': 'en',
+      'aria.activeProfile': 'p1',
     });
     final preferences = await SharedPreferences.getInstance();
 
@@ -78,45 +79,45 @@ void main() {
         child: const AriaApp(),
       ),
     );
-    await pumpUntil(tester, find.text('Pick an executor to connect to.'));
+    await pumpUntil(tester, find.text('Connect Aria'));
   }
 
-  testWidgets('connect, ask, decide, resume', (tester) async {
+  testWidgets('connect, open, ask, decide, resume', (tester) async {
     await pumpApp(tester);
 
-    // The app opens on the server list, never on an empty workspace.
-    expect(find.text('Pick an executor to connect to.'), findsOneWidget);
-    expect(find.text('Local bridge'), findsWidgets);
-    expect(find.text('Connect'), findsOneWidget);
+    // The app opens on a dormant point, never on an empty workspace.
+    expect(find.text('Connect Aria'), findsOneWidget);
+    expect(find.text('Local bridge · Change'), findsOneWidget);
 
-    await tester.tap(find.text('Connect'));
-    await pumpUntil(tester, find.text('Prepare the beta release'));
+    await tester.tap(find.byKey(const ValueKey<String>('wake-dot')));
+    await pumpUntil(tester, find.text('What can Aria do for you?'));
 
-    // The agent's session list, with the one we are in.
+    // Home lists the sessions the agent knows about.
+    expect(find.text('Prepare the beta release'), findsOneWidget);
     expect(find.text('Audit the billing migration'), findsOneWidget);
-    expect(find.text('Connected'), findsOneWidget);
 
-    // Send a turn.
-    await tester.enterText(
-      find.byType(TextField).first,
-      'Ship the public beta by Friday.',
-    );
+    await tester.tap(find.text('Prepare the beta release'));
+    await pumpUntil(tester, find.textContaining('The checklist is drafted'));
+
+    // Send a turn from the composer.
+    final compose = find.byKey(const ValueKey<String>('chat-compose-input'));
+    await tester.tap(compose);
+    await tester.enterText(compose, 'Ship the public beta by Friday.');
     await tester.pump();
-    await tester.tap(find.byIcon(Icons.arrow_upward_rounded));
+    await tester.tap(find.byKey(const ValueKey<String>('chat-send')));
     await tester.pump();
 
     await pumpUntil(tester, find.text('Ship the public beta by Friday.'));
     await pumpUntil(tester, find.textContaining('The build is ready'));
 
-    // The process pill summarises the tool calls rather than spilling them.
-    await pumpUntil(tester, find.textContaining('steps'));
+    // The two tools and the thought before the prose fold into one line.
+    await pumpUntil(tester, find.textContaining(' · 3 steps'));
 
-    // The one decision. That it also refuses the system back button is pinned
-    // by test/widgets/permission_sheet_test.dart, where a route pop can be
-    // driven directly.
+    // The one decision arrives in a blocking sheet.
     await pumpUntil(tester, find.text('Allow publishing the beta?'));
     expect(find.text('Allow once'), findsOneWidget);
     expect(find.text('Not now'), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 320));
 
     await tester.tap(find.text('Allow once'));
     final answered = await pumpUntilTrue(
@@ -129,11 +130,40 @@ void main() {
 
     await pumpUntil(tester, find.textContaining('The beta is published'));
 
-    // Switching to another session replays that session's history, not the
-    // one still on screen.
+    // Back home, then open another conversation; the agent replays its history.
+    await tester.tap(find.byIcon(Icons.chevron_left_rounded));
+    await pumpUntil(tester, find.text('What can Aria do for you?'));
+    // Let the popped chat finish its exit transition before the next route.
+    await tester.pump(const Duration(milliseconds: 400));
     await tester.tap(find.text('Audit the billing migration'));
     await pumpUntil(tester, find.textContaining('The migration is clean'));
+    await tester.pump(const Duration(milliseconds: 400));
     expect(bridge.lastLoadedSessionId, FakeBridge.previousSessionId);
+
+    // Back home and start a brand-new conversation. Connecting no longer
+    // creates a session; the first prompt does.
+    await tester.tap(find.byIcon(Icons.chevron_left_rounded));
+    await pumpUntil(tester, find.text('What can Aria do for you?'));
+    await tester.pump(const Duration(milliseconds: 400));
+
+    final newPrompt = find.byKey(const ValueKey<String>('home-compose-input'));
+    await tester.tap(newPrompt);
+    await tester.enterText(newPrompt, 'Write the launch note.');
+    await tester.pump();
+    await tester.tap(find.byKey(const ValueKey<String>('home-send')));
+    await tester.pump();
+
+    await pumpUntil(tester, find.text('Write the launch note.'));
+    await pumpUntil(tester, find.textContaining('The build is ready'));
+    expect(bridge.methods, contains('session/new'));
+
+    await pumpUntil(tester, find.text('Allow publishing the beta?'));
+    await tester.pump(const Duration(milliseconds: 320));
+    await tester.tap(find.text('Not now'));
+    await pumpUntil(
+      tester,
+      find.textContaining('Publishing is waiting on your approval'),
+    );
   });
 }
 

@@ -1,175 +1,211 @@
 import 'package:material_ui/material_ui.dart';
 
-/// The semantic color scale.
+/// Aria's color tokens, straight from the design.
 ///
-/// Widgets must read colors from this extension, never from literals. The
-/// light and dark sets are complete and independent: dark is not a filter over
-/// light.
+/// One continuous ground, surfaces made of light rather than lines, and a
+/// single warm accent that means Aria is present or waiting.
 @immutable
 final class AriaColors extends ThemeExtension<AriaColors> {
   const AriaColors({
-    required this.canvas,
-    required this.surface,
-    required this.raised,
-    required this.inset,
-    required this.selected,
-    required this.text,
-    required this.textSecondary,
-    required this.textMuted,
-    required this.border,
-    required this.borderStrong,
-    required this.primary,
-    required this.primaryHover,
-    required this.primarySoft,
-    required this.onPrimary,
-    required this.success,
-    required this.successSoft,
-    required this.warning,
-    required this.warningSoft,
-    required this.attention,
-    required this.attentionSoft,
-    required this.error,
-    required this.errorSoft,
+    required this.ground,
+    required this.sheet,
+    required this.ink,
+    required this.ink2,
+    required this.muted,
+    required this.panel,
+    required this.panel2,
+    required this.panel3,
+    required this.panelDeep,
+    required this.gold,
+    required this.goldFill,
+    required this.goldInk,
+    required this.goldSoft,
+    required this.goldGlow,
+    required this.danger,
+    required this.dangerSoft,
+    required this.key,
+    required this.keyInk,
+    required this.keyMuted,
+    required this.focus,
+    required this.scrim,
   });
 
-  /// Light theme values straight from the design tokens.
-  factory AriaColors.light() => const AriaColors(
-    canvas: Color(0xFFF6F7F9),
-    surface: Color(0xFFFFFFFF),
-    raised: Color(0xFFFFFFFF),
-    inset: Color(0xFFEFF1F5),
-    selected: Color(0xFFEEEFFF),
-    text: Color(0xFF181B20),
-    textSecondary: Color(0xFF4B5563),
-    textMuted: Color(0xFF626D7D),
-    border: Color(0xFFDDE2E8),
-    borderStrong: Color(0xFFC2CBD5),
-    primary: Color(0xFF494FE0),
-    primaryHover: Color(0xFF383DC4),
-    primarySoft: Color(0xFFEEEFFF),
-    onPrimary: Color(0xFFFFFFFF),
-    success: Color(0xFF147D57),
-    successSoft: Color(0xFFE7F5EF),
-    warning: Color(0xFF6E5A00),
-    warningSoft: Color(0xFFF7F3DF),
-    attention: Color(0xFF8A4B00),
-    attentionSoft: Color(0xFFFFF0E0),
-    error: Color(0xFFBD3542),
-    errorSoft: Color(0xFFFCECEF),
-  );
-
-  /// Dark theme values. Every semantic state has a soft fill of its own.
   factory AriaColors.dark() => const AriaColors(
-    canvas: Color(0xFF0E1013),
-    surface: Color(0xFF15181D),
-    raised: Color(0xFF1B1F26),
-    inset: Color(0xFF111419),
-    selected: Color(0xFF25294A),
-    text: Color(0xFFF1F3F6),
-    textSecondary: Color(0xFFBAC2CD),
-    textMuted: Color(0xFF929DAB),
-    border: Color(0xFF303640),
-    borderStrong: Color(0xFF3D4551),
-    primary: Color(0xFFAEB4FF),
-    primaryHover: Color(0xFFC6CBFF),
-    primarySoft: Color(0xFF272B4B),
-    onPrimary: Color(0xFF171A44),
-    success: Color(0xFF65D6A6),
-    successSoft: Color(0xFF15352B),
-    warning: Color(0xFFD8CB8A),
-    warningSoft: Color(0xFF2E2C18),
-    attention: Color(0xFFF7BE7A),
-    attentionSoft: Color(0xFF3B2412),
-    error: Color(0xFFFF9AA3),
-    errorSoft: Color(0xFF3A2027),
+    ground: Color(0xFF09090B),
+    sheet: Color(0xFF151517),
+    ink: Color(0xFFF6F4EF),
+    ink2: Color(0xFFD0CDC6),
+    muted: Color(0xFF9B9891),
+    // Surfaces are light, not lines: translucent white over the ground.
+    panel: Color(0x0EFFFFFF),
+    panel2: Color(0x17FFFFFF),
+    panel3: Color(0x24FFFFFF),
+    panelDeep: Color(0x4D000000),
+    gold: Color(0xFFF0BA79),
+    goldFill: Color(0xFFF0BA79),
+    goldInk: Color(0xFF1A1105),
+    goldSoft: Color(0x21F0BA79),
+    goldGlow: Color(0x66F0BA79),
+    danger: Color(0xFFFF9B8F),
+    dangerSoft: Color(0x1FFF9B8F),
+    key: Color(0xFFF5F3EE),
+    keyInk: Color(0xFF0B0B0C),
+    keyMuted: Color(0x9E0B0B0C),
+    focus: Color(0xFFF0BA79),
+    scrim: Color(0x94040405),
   );
 
-  /// Page background.
-  final Color canvas;
+  factory AriaColors.light() => const AriaColors(
+    ground: Color(0xFFF4F4F1),
+    sheet: Color(0xFFFCFCF9),
+    ink: Color(0xFF131416),
+    ink2: Color(0xFF3B3D41),
+    muted: Color(0xFF636569),
+    panel: Color(0x0E101113),
+    panel2: Color(0x16101113),
+    panel3: Color(0x21101113),
+    panelDeep: Color(0x0D101113),
+    gold: Color(0xFF8A570F),
+    goldFill: Color(0xFF9C6318),
+    goldInk: Color(0xFFFFF8EC),
+    goldSoft: Color(0x1A8F5C12),
+    goldGlow: Color(0x47A86C1C),
+    danger: Color(0xFFA33228),
+    dangerSoft: Color(0x17A33228),
+    key: Color(0xFF141518),
+    keyInk: Color(0xFFF7F6F2),
+    keyMuted: Color(0xA8F7F6F2),
+    focus: Color(0xFF8F5C12),
+    scrim: Color(0x94040405),
+  );
 
-  /// Cards, composer, sheets.
-  final Color surface;
+  /// The page.
+  final Color ground;
 
-  /// Overlays that sit above [surface] in dark mode.
-  final Color raised;
+  /// A sheet lifted off the page.
+  final Color sheet;
 
-  /// User messages and quiet grouping.
-  final Color inset;
+  /// Primary text.
+  final Color ink;
 
-  /// The selected row in a list.
-  final Color selected;
+  /// Body text.
+  final Color ink2;
 
-  final Color text;
-  final Color textSecondary;
-  final Color textMuted;
-  final Color border;
-  final Color borderStrong;
+  /// Quiet labels, metadata.
+  final Color muted;
 
-  /// The single accent. Marks actions and focus.
-  final Color primary;
-  final Color primaryHover;
-  final Color primarySoft;
-  final Color onPrimary;
+  /// The first surface: a whisper of light over the ground.
+  final Color panel;
 
-  final Color success;
-  final Color successSoft;
-  final Color warning;
-  final Color warningSoft;
+  /// The second surface: hover, pressed, user bubbles.
+  final Color panel2;
 
-  /// A decision is waiting on the user. The only state allowed to fill a card.
-  final Color attention;
-  final Color attentionSoft;
+  /// The third surface: the strongest quiet fill.
+  final Color panel3;
 
-  final Color error;
-  final Color errorSoft;
+  /// A well set into the page: code, input frames.
+  final Color panelDeep;
+
+  /// The one accent, as text.
+  final Color gold;
+
+  /// The one accent, as a fill.
+  final Color goldFill;
+
+  /// Text and icons on [goldFill].
+  final Color goldInk;
+
+  /// A quiet gold-washed surface.
+  final Color goldSoft;
+
+  /// The halo around something live.
+  final Color goldGlow;
+
+  final Color danger;
+  final Color dangerSoft;
+
+  /// The high-contrast surface: primary buttons, selected rows.
+  final Color key;
+
+  /// Text on [key].
+  final Color keyInk;
+
+  /// Secondary text on [key].
+  final Color keyMuted;
+
+  final Color focus;
+  final Color scrim;
+
+  // ── Older names, kept as aliases while the screens migrate ──────────────
+
+  Color get canvas => ground;
+  Color get surface => panel;
+  Color get raised => panel2;
+  Color get inset => panel;
+  Color get selected => key;
+  Color get text => ink;
+  Color get textSecondary => ink2;
+  Color get textMuted => muted;
+  Color get border => panel;
+  Color get borderStrong => panel3;
+  Color get primary => gold;
+  Color get primaryHover => goldFill;
+  Color get primarySoft => goldSoft;
+  Color get onPrimary => goldInk;
+  Color get success => ink2;
+  Color get successSoft => panel;
+  Color get warning => gold;
+  Color get warningSoft => goldSoft;
+  Color get attention => gold;
+  Color get attentionSoft => goldSoft;
+  Color get error => danger;
+  Color get errorSoft => dangerSoft;
 
   @override
   AriaColors copyWith({
-    Color? canvas,
-    Color? surface,
-    Color? raised,
-    Color? inset,
-    Color? selected,
-    Color? text,
-    Color? textSecondary,
-    Color? textMuted,
-    Color? border,
-    Color? borderStrong,
-    Color? primary,
-    Color? primaryHover,
-    Color? primarySoft,
-    Color? onPrimary,
-    Color? success,
-    Color? successSoft,
-    Color? warning,
-    Color? warningSoft,
-    Color? attention,
-    Color? attentionSoft,
-    Color? error,
-    Color? errorSoft,
+    Color? ground,
+    Color? sheet,
+    Color? ink,
+    Color? ink2,
+    Color? muted,
+    Color? panel,
+    Color? panel2,
+    Color? panel3,
+    Color? panelDeep,
+    Color? gold,
+    Color? goldFill,
+    Color? goldInk,
+    Color? goldSoft,
+    Color? goldGlow,
+    Color? danger,
+    Color? dangerSoft,
+    Color? key,
+    Color? keyInk,
+    Color? keyMuted,
+    Color? focus,
+    Color? scrim,
   }) => AriaColors(
-    canvas: canvas ?? this.canvas,
-    surface: surface ?? this.surface,
-    raised: raised ?? this.raised,
-    inset: inset ?? this.inset,
-    selected: selected ?? this.selected,
-    text: text ?? this.text,
-    textSecondary: textSecondary ?? this.textSecondary,
-    textMuted: textMuted ?? this.textMuted,
-    border: border ?? this.border,
-    borderStrong: borderStrong ?? this.borderStrong,
-    primary: primary ?? this.primary,
-    primaryHover: primaryHover ?? this.primaryHover,
-    primarySoft: primarySoft ?? this.primarySoft,
-    onPrimary: onPrimary ?? this.onPrimary,
-    success: success ?? this.success,
-    successSoft: successSoft ?? this.successSoft,
-    warning: warning ?? this.warning,
-    warningSoft: warningSoft ?? this.warningSoft,
-    attention: attention ?? this.attention,
-    attentionSoft: attentionSoft ?? this.attentionSoft,
-    error: error ?? this.error,
-    errorSoft: errorSoft ?? this.errorSoft,
+    ground: ground ?? this.ground,
+    sheet: sheet ?? this.sheet,
+    ink: ink ?? this.ink,
+    ink2: ink2 ?? this.ink2,
+    muted: muted ?? this.muted,
+    panel: panel ?? this.panel,
+    panel2: panel2 ?? this.panel2,
+    panel3: panel3 ?? this.panel3,
+    panelDeep: panelDeep ?? this.panelDeep,
+    gold: gold ?? this.gold,
+    goldFill: goldFill ?? this.goldFill,
+    goldInk: goldInk ?? this.goldInk,
+    goldSoft: goldSoft ?? this.goldSoft,
+    goldGlow: goldGlow ?? this.goldGlow,
+    danger: danger ?? this.danger,
+    dangerSoft: dangerSoft ?? this.dangerSoft,
+    key: key ?? this.key,
+    keyInk: keyInk ?? this.keyInk,
+    keyMuted: keyMuted ?? this.keyMuted,
+    focus: focus ?? this.focus,
+    scrim: scrim ?? this.scrim,
   );
 
   @override
@@ -177,28 +213,27 @@ final class AriaColors extends ThemeExtension<AriaColors> {
     if (other == null) return this;
     Color mix(Color a, Color b) => Color.lerp(a, b, t) ?? b;
     return AriaColors(
-      canvas: mix(canvas, other.canvas),
-      surface: mix(surface, other.surface),
-      raised: mix(raised, other.raised),
-      inset: mix(inset, other.inset),
-      selected: mix(selected, other.selected),
-      text: mix(text, other.text),
-      textSecondary: mix(textSecondary, other.textSecondary),
-      textMuted: mix(textMuted, other.textMuted),
-      border: mix(border, other.border),
-      borderStrong: mix(borderStrong, other.borderStrong),
-      primary: mix(primary, other.primary),
-      primaryHover: mix(primaryHover, other.primaryHover),
-      primarySoft: mix(primarySoft, other.primarySoft),
-      onPrimary: mix(onPrimary, other.onPrimary),
-      success: mix(success, other.success),
-      successSoft: mix(successSoft, other.successSoft),
-      warning: mix(warning, other.warning),
-      warningSoft: mix(warningSoft, other.warningSoft),
-      attention: mix(attention, other.attention),
-      attentionSoft: mix(attentionSoft, other.attentionSoft),
-      error: mix(error, other.error),
-      errorSoft: mix(errorSoft, other.errorSoft),
+      ground: mix(ground, other.ground),
+      sheet: mix(sheet, other.sheet),
+      ink: mix(ink, other.ink),
+      ink2: mix(ink2, other.ink2),
+      muted: mix(muted, other.muted),
+      panel: mix(panel, other.panel),
+      panel2: mix(panel2, other.panel2),
+      panel3: mix(panel3, other.panel3),
+      panelDeep: mix(panelDeep, other.panelDeep),
+      gold: mix(gold, other.gold),
+      goldFill: mix(goldFill, other.goldFill),
+      goldInk: mix(goldInk, other.goldInk),
+      goldSoft: mix(goldSoft, other.goldSoft),
+      goldGlow: mix(goldGlow, other.goldGlow),
+      danger: mix(danger, other.danger),
+      dangerSoft: mix(dangerSoft, other.dangerSoft),
+      key: mix(key, other.key),
+      keyInk: mix(keyInk, other.keyInk),
+      keyMuted: mix(keyMuted, other.keyMuted),
+      focus: mix(focus, other.focus),
+      scrim: mix(scrim, other.scrim),
     );
   }
 }

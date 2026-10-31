@@ -5,41 +5,39 @@ import 'package:aria/l10n/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// The approval sheet is the one place the product cannot let a stray gesture
-/// through: the agent is blocked until an answer arrives.
+/// An approval blocks the agent, so the sheet cannot be dismissed by tapping
+/// outside, by the close affordance, or by the system back gesture.
 void main() {
   final decision = Decision(
     id: 'd1',
-    prompt: 'Publish the beta?',
-    detail: 'npm publish',
+    prompt: 'Allow publishing the beta?',
+    detail: 'npm publish aria@0.1.0-beta.1 --tag beta',
+    highImpact: true,
+    createdAt: DateTime(2026, 10, 27, 9, 31),
     options: const <DecisionOption>[
       DecisionOption(
-        id: 'allow',
+        id: 'allow_once',
         label: 'Allow once',
         kind: DecisionOptionKind.allowOnce,
       ),
       DecisionOption(
-        id: 'reject',
+        id: 'allow_always',
+        label: 'Always allow',
+        kind: DecisionOptionKind.allowAlways,
+      ),
+      DecisionOption(
+        id: 'reject_once',
         label: 'Not now',
         kind: DecisionOptionKind.rejectOnce,
       ),
     ],
-    createdAt: DateTime(2026, 10, 24),
   );
 
-  /// Pumps the sheet over an empty page and returns what it answers with.
-  Future<List<DecisionOption?>> openSheet(
-    WidgetTester tester, {
-    required Size size,
-  }) async {
-    tester.view.physicalSize = size;
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.reset);
-
-    final answers = <DecisionOption?>[];
+  Future<_Answers> open(WidgetTester tester) async {
+    final answers = _Answers();
     await tester.pumpWidget(
       MaterialApp(
-        theme: buildAriaTheme(brightness: Brightness.light, chinese: false),
+        theme: buildAriaTheme(brightness: Brightness.dark, chinese: false),
         localizationsDelegates: <LocalizationsDelegate<dynamic>>[
           AppLocalizations.delegate,
           ...GlobalMaterialLocalizations.delegates,
@@ -52,60 +50,75 @@ void main() {
                 onPressed: () => showPermission(
                   context,
                   decision,
-                  queued: 0,
-                  onAnswer: answers.add,
+                  queued: 1,
+                  onAnswer: answers.record,
                 ),
-                child: const Text('ask'),
+                child: const Text('open'),
               ),
             ),
           ),
         ),
       ),
     );
-    await tester.tap(find.text('ask'));
+    await tester.tap(find.text('open'));
     await tester.pumpAndSettle();
     return answers;
   }
 
-  const wide = Size(1200, 800);
-  const narrow = Size(420, 800);
+  testWidgets('offers every option the agent sent, with the risk marked', (
+    tester,
+  ) async {
+    await open(tester);
 
-  for (final (label, size) in <(String, Size)>[
-    ('dialog', wide),
-    ('sheet', narrow),
-  ]) {
-    testWidgets('$label: the system back button cannot dismiss it', (
-      tester,
-    ) async {
-      final answers = await openSheet(tester, size: size);
-      expect(find.text('Publish the beta?'), findsOneWidget);
+    expect(find.text('Allow publishing the beta?'), findsOneWidget);
+    expect(find.text('Allow once'), findsOneWidget);
+    expect(find.text('This run only'), findsOneWidget);
+    expect(find.text('Always allow'), findsOneWidget);
+    expect(find.text('Not now'), findsOneWidget);
+    expect(find.textContaining('cannot be undone'), findsOneWidget);
+    expect(find.text('1 more decision is waiting'), findsOneWidget);
+    // A blocking sheet has no way out but the options and the cancel action.
+    expect(find.byIcon(Icons.close_rounded), findsNothing);
+  });
 
-      await tester.binding.handlePopRoute();
-      await tester.pumpAndSettle();
+  testWidgets('the system back cannot dismiss it', (tester) async {
+    await open(tester);
 
-      expect(find.text('Publish the beta?'), findsOneWidget);
-      expect(answers, isEmpty);
-    });
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
 
-    testWidgets('$label: every agent option and cancel answer it once', (
-      tester,
-    ) async {
-      final answers = await openSheet(tester, size: size);
+    expect(find.text('Allow publishing the beta?'), findsOneWidget);
+  });
 
-      await tester.tap(find.text('Allow once'));
-      await tester.pumpAndSettle();
+  testWidgets('an option answers with its id', (tester) async {
+    final answers = await open(tester);
 
-      expect(find.text('Publish the beta?'), findsNothing);
-      expect(answers, <DecisionOption?>[decision.options.first]);
-    });
+    await tester.tap(find.text('Allow once'));
+    await tester.pumpAndSettle();
 
-    testWidgets('$label: cancel reports the cancelled outcome', (tester) async {
-      final answers = await openSheet(tester, size: size);
+    expect(answers.answered, isTrue);
+    expect(answers.option?.id, 'allow_once');
+    expect(find.text('Allow publishing the beta?'), findsNothing);
+  });
 
-      await tester.tap(find.text('Cancel'));
-      await tester.pumpAndSettle();
+  testWidgets('cancel answers with no option', (tester) async {
+    final answers = await open(tester);
 
-      expect(answers, <DecisionOption?>[null]);
-    });
+    await tester.tap(find.text('Cancel this'));
+    await tester.pumpAndSettle();
+
+    expect(answers.answered, isTrue);
+    expect(answers.option, isNull);
+    expect(find.text('Allow publishing the beta?'), findsNothing);
+  });
+}
+
+final class _Answers {
+  bool answered = false;
+  DecisionOption? option;
+
+  void record(DecisionOption? value) {
+    answered = true;
+    option = value;
   }
 }

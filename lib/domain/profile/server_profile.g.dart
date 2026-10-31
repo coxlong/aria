@@ -12,6 +12,7 @@ _ServerProfile _$ServerProfileFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String,
       url: json['url'] as String,
       cwd: json['cwd'] as String? ?? '',
+      description: json['description'] as String? ?? '',
     );
 
 Map<String, dynamic> _$ServerProfileToJson(_ServerProfile instance) =>
@@ -20,4 +21,5 @@ Map<String, dynamic> _$ServerProfileToJson(_ServerProfile instance) =>
       'name': instance.name,
       'url': instance.url,
       'cwd': instance.cwd,
+      'description': instance.description,
     };

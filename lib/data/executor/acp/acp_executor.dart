@@ -35,21 +35,27 @@ final class AcpExecutor implements Executor {
   StreamSubscription<AcpTransportState>? _stateSubscription;
   StreamSubscription<PermissionRequest>? _permissionSubscription;
 
-  AcpSession? _session;
-  StreamSubscription<SessionUpdate>? _updates;
+  /// Every session this executor follows, by agent-assigned id.
+  ///
+  /// ACP allows several sessions on one connection, and each keeps streaming
+  /// while another is on screen. Holding them all is what lets a running turn
+  /// survive switching conversations.
+  final Map<String, AcpSession> _sessions = <String, AcpSession>{};
+  final Map<String, StreamSubscription<SessionUpdate>> _updates =
+      <String, StreamSubscription<SessionUpdate>>{};
 
   /// Unanswered decisions, in arrival order.
   final List<MapEntry<String, PermissionRequest>> _permissions =
       <MapEntry<String, PermissionRequest>>[];
 
-  /// Latest tool call per id. Patches only carry the fields that changed, and
-  /// a later frame usually omits `rawInput`, so the previous value is what
-  /// keeps a step's input from disappearing.
-  final Map<String, ToolCallInfo> _calls = <String, ToolCallInfo>{};
+  /// Latest tool call per session and id. Patches only carry the fields that
+  /// changed, and a later frame usually omits `rawInput`, so the previous value
+  /// is what keeps a step's input from disappearing.
+  final Map<String, Map<String, ToolCallInfo>> _calls =
+      <String, Map<String, ToolCallInfo>>{};
 
   /// Debug-only transcript of the raw ACP wire. Off in release builds.
-  late final AcpDebugLog? _frameLog =
-      kDebugMode ? AcpDebugLog.open() : null;
+  late final AcpDebugLog? _frameLog = kDebugMode ? AcpDebugLog.open() : null;
 
   InitializeResult? _initialized;
   bool _disposed = false;
@@ -59,9 +65,6 @@ final class AcpExecutor implements Executor {
 
   @override
   Stream<ExecutorConnection> get connection => _connection.stream;
-
-  @override
-  SessionSurfaces get surfaces => _readSurfaces();
 
   // ── Connection ──────────────────────────────────────────────────────────
 
@@ -180,39 +183,36 @@ final class AcpExecutor implements Executor {
   Future<void> deleteSession(String id) async {
     final client = await _clientOrThrow();
     await client.deleteSession(id);
-  }
-
-  /// Takes ownership of a session without subscribing to it yet.
-  ///
-  /// A resumed session replays its history before `loadSession` resolves, and
-  /// the session buffers those frames until someone listens. Holding them back
-  /// until [attach] means the chat surface is already listening when history
-  /// arrives, so none of it is dropped.
-  ///
-  /// This executor follows one session at a time, so taking a new one releases
-  /// the old one: its pending permissions are denied, its turn settles, and the
-  /// client stops buffering updates nobody will read.
-  void _hold(AcpSession session) {
-    final previous = _session;
-    unawaited(_updates?.cancel());
-    _updates = null;
-    _session = session;
-    _calls.clear();
-    if (previous == null || previous.id == session.id) return;
-
-    _permissions.removeWhere((entry) => entry.value.sessionId == previous.id);
-    unawaited(_client?.releaseSession(previous.id));
+    await _forget(id);
   }
 
   @override
-  void attach(String sessionId) {
-    final session = _session;
-    if (session == null || session.id != sessionId) return;
-    if (_updates != null) return;
+  bool holds(String sessionId) => _sessions.containsKey(sessionId);
 
-    _updates = session.updates.listen(
+  /// Takes ownership of a session and starts forwarding its updates.
+  ///
+  /// A resumed session replays its history before `loadSession` resolves and
+  /// buffers those frames until someone listens. The manager subscribes to this
+  /// executor before it ever opens a session, so the replay is consumed as soon
+  /// as it arrives and folded into the session's state — no page has to be
+  /// mounted for that to happen.
+  ///
+  /// Re-holding the same id replaces the previous subscription, because
+  /// `loadSession` disposes the old session object.
+  void _hold(AcpSession session) {
+    unawaited(_updates.remove(session.id)?.cancel());
+    _sessions[session.id] = session;
+    _calls[session.id] = <String, ToolCallInfo>{};
+    _updates[session.id] = session.updates.listen(
       (update) => _onUpdate(session.id, update),
     );
+  }
+
+  Future<void> _forget(String sessionId) async {
+    await _updates.remove(sessionId)?.cancel();
+    _sessions.remove(sessionId);
+    _calls.remove(sessionId);
+    _permissions.removeWhere((entry) => entry.value.sessionId == sessionId);
   }
 
   Future<AcpClient> _clientOrThrow() async {
@@ -228,10 +228,7 @@ final class AcpExecutor implements Executor {
   @override
   Future<void> prompt({required String sessionId, required String text}) async {
     try {
-      final session = _session;
-      if (session == null || session.id != sessionId) {
-        throw const UnknownFailure('The session was closed');
-      }
+      final session = _sessionOf(sessionId);
       final result = await session.prompt(text);
       _emit(ExecutionFinished(sessionId, stopReason: result.stopReason));
     } on Object catch (failure) {
@@ -245,8 +242,8 @@ final class AcpExecutor implements Executor {
 
   @override
   Future<void> cancel(String sessionId) async {
-    final session = _session;
-    if (session == null || session.id != sessionId) return;
+    final session = _sessions[sessionId];
+    if (session == null) return;
     await session.cancel();
   }
 
@@ -296,36 +293,41 @@ final class AcpExecutor implements Executor {
   // ── Configuration ───────────────────────────────────────────────────────
 
   @override
-  Future<void> setModel(String id) async {
-    final session = _requireSession();
+  Future<void> setModel(String sessionId, String id) async {
+    final session = _sessionOf(sessionId);
     await session.setModel(id);
-    _emitSurfaces(session);
+    _emitSurfaces(sessionId);
   }
 
   @override
-  Future<void> setMode(String id) async {
-    final session = _requireSession();
+  Future<void> setMode(String sessionId, String id) async {
+    final session = _sessionOf(sessionId);
     await session.setMode(id);
-    _emitSurfaces(session);
+    _emitSurfaces(sessionId);
   }
 
   @override
-  Future<void> setConfigOption(String configId, String value) async {
-    final session = _requireSession();
+  Future<void> setConfigOption(
+    String sessionId,
+    String configId,
+    String value,
+  ) async {
+    final session = _sessionOf(sessionId);
     await session.setConfigOption(configId, value);
-    _emitSurfaces(session);
+    _emitSurfaces(sessionId);
   }
 
-  AcpSession _requireSession() {
-    final session = _session;
+  AcpSession _sessionOf(String sessionId) {
+    final session = _sessions[sessionId];
     if (session == null) {
-      throw const UnknownFailure('No session is open');
+      throw const UnknownFailure('The session was closed');
     }
     return session;
   }
 
-  SessionSurfaces _readSurfaces() {
-    final session = _session;
+  @override
+  SessionSurfaces surfacesOf(String sessionId) {
+    final session = _sessions[sessionId];
     if (session == null) return SessionSurfaces.none;
 
     final models = session.models;
@@ -351,8 +353,8 @@ final class AcpExecutor implements Executor {
     );
   }
 
-  void _emitSurfaces(AcpSession session) {
-    _emit(SurfacesChanged(session.id));
+  void _emitSurfaces(String sessionId) {
+    _emit(SurfacesChanged(sessionId));
   }
 
   // ── Updates ─────────────────────────────────────────────────────────────
@@ -366,7 +368,7 @@ final class AcpExecutor implements Executor {
       case AgentThoughtChunk(:final text):
         _emit(AgentThought(sessionId, text));
       case ToolCallStarted(:final toolCall):
-        _emit(StepChanged(sessionId, _stepOf(toolCall)));
+        _emit(StepChanged(sessionId, _stepOf(sessionId, toolCall)));
       case ToolCallPatched(
         :final toolCallId,
         :final title,
@@ -379,17 +381,19 @@ final class AcpExecutor implements Executor {
         // Merge onto the last frame that carried each field: null means
         // "unchanged" in the protocol, and a patch that only reports status
         // must not wipe the input the start frame supplied.
-        final merged = (_calls[toolCallId] ??
-                ToolCallInfo(id: toolCallId, title: title ?? ''))
-            .copyWith(
-              title: title,
-              status: status,
-              rawInput: rawInput,
-              rawOutput: rawOutput,
-              content: content,
-              meta: meta,
-            );
-        _emit(StepChanged(sessionId, _stepOf(merged)));
+        final calls = _calls[sessionId] ??= <String, ToolCallInfo>{};
+        final merged =
+            (calls[toolCallId] ??
+                    ToolCallInfo(id: toolCallId, title: title ?? ''))
+                .copyWith(
+                  title: title,
+                  status: status,
+                  rawInput: rawInput,
+                  rawOutput: rawOutput,
+                  content: content,
+                  meta: meta,
+                );
+        _emit(StepChanged(sessionId, _stepOf(sessionId, merged)));
       case CurrentModeUpdate():
       case ConfigOptionUpdate():
         _emit(SurfacesChanged(sessionId));
@@ -399,8 +403,7 @@ final class AcpExecutor implements Executor {
   }
 
   void _onPermission(PermissionRequest request) {
-    final session = _session;
-    if (session == null || session.id != request.sessionId) {
+    if (!_sessions.containsKey(request.sessionId)) {
       // A permission request must be answered exactly once, even when it
       // arrives for a session this client no longer holds.
       unawaited(request.deny());
@@ -424,7 +427,7 @@ final class AcpExecutor implements Executor {
       highImpact: _isHighImpact(request.toolCall),
     );
     _permissions.add(MapEntry<String, PermissionRequest>(decision.id, request));
-    _emit(DecisionRaised(session.id, decision));
+    _emit(DecisionRaised(request.sessionId, decision));
   }
 
   // ── Helpers ─────────────────────────────────────────────────────────────
@@ -439,12 +442,13 @@ final class AcpExecutor implements Executor {
     _connection.add(state);
   }
 
-  WorkStep _stepOf(ToolCallInfo call) {
-    _calls[call.id] = call;
+  WorkStep _stepOf(String sessionId, ToolCallInfo call) {
+    (_calls[sessionId] ??= <String, ToolCallInfo>{})[call.id] = call;
     return WorkStep(
       id: call.id,
       title: call.title,
       status: _stepStatus(call.status),
+      action: _actionOf(call.kind, call.toolName),
       detail: _detailOf(call.content),
       input: _encode(call.rawInput),
       output: _encode(call.rawOutput),
@@ -457,6 +461,51 @@ final class AcpExecutor implements Executor {
     'in_progress' => StepStatus.running,
     _ => StepStatus.pending,
   };
+
+  /// The protocol's `kind` is the primary signal; Claude Code's `toolName` is
+  /// the fallback for agents that only publish the latter.
+  static ToolAction _actionOf(String? kind, String? toolName) {
+    final source = '${kind ?? ''} ${toolName ?? ''}'.toLowerCase();
+    if (source.contains('execute') ||
+        source.contains('bash') ||
+        source.contains('shell') ||
+        source.contains('terminal') ||
+        source.contains('command')) {
+      return ToolAction.execute;
+    }
+    if (source.contains('edit') ||
+        source.contains('write') ||
+        source.contains('patch') ||
+        source.contains('notebook')) {
+      return ToolAction.edit;
+    }
+    if (source.contains('read') ||
+        source.contains('open') ||
+        source.contains('file')) {
+      return ToolAction.read;
+    }
+    if (source.contains('search') ||
+        source.contains('grep') ||
+        source.contains('glob') ||
+        source.contains('find')) {
+      return ToolAction.search;
+    }
+    if (source.contains('fetch') ||
+        source.contains('web') ||
+        source.contains('http')) {
+      return ToolAction.fetch;
+    }
+    if (source.contains('delete') || source.contains('remove')) {
+      return ToolAction.delete;
+    }
+    if (source.contains('move') || source.contains('rename')) {
+      return ToolAction.move;
+    }
+    if (source.contains('think') || source.contains('todo')) {
+      return ToolAction.think;
+    }
+    return ToolAction.other;
+  }
 
   static String? _detailOf(List<Map<String, Object?>>? content) {
     if (content == null || content.isEmpty) return null;
@@ -514,10 +563,13 @@ final class AcpExecutor implements Executor {
   @override
   Future<void> dispose() async {
     _disposed = true;
-    await _updates?.cancel();
+    for (final subscription in _updates.values.toList(growable: false)) {
+      await subscription.cancel();
+    }
+    _updates.clear();
     await _discard(_client);
     _client = null;
-    _session = null;
+    _sessions.clear();
     _permissions.clear();
     _calls.clear();
     _frameLog?.close();

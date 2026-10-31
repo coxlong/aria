@@ -59,22 +59,22 @@ MarkdownStyleSheet _sheetOf(BuildContext context) {
   final type = context.ariaType;
 
   return MarkdownStyleSheet(
-    p: type.body.copyWith(color: colors.text),
+    p: type.body.copyWith(color: colors.ink2),
     a: type.body.copyWith(
-      color: colors.primary,
+      color: colors.gold,
       decoration: TextDecoration.underline,
-      decorationColor: colors.primary,
+      decorationColor: colors.gold,
     ),
-    em: type.body.copyWith(color: colors.text, fontStyle: FontStyle.italic),
-    strong: type.body.copyWith(color: colors.text, fontWeight: FontWeight.w600),
+    em: type.body.copyWith(color: colors.ink2, fontStyle: FontStyle.italic),
+    strong: type.body.copyWith(color: colors.ink, fontWeight: FontWeight.w600),
     del: type.body.copyWith(
-      color: colors.textMuted,
+      color: colors.muted,
       decoration: TextDecoration.lineThrough,
     ),
-    h1: type.headline.copyWith(color: colors.text),
-    h2: type.title.copyWith(color: colors.text),
-    h3: type.title.copyWith(color: colors.text),
-    blockquote: type.body.copyWith(color: colors.textSecondary),
+    h1: type.headline.copyWith(color: colors.ink),
+    h2: type.title.copyWith(color: colors.ink),
+    h3: type.title.copyWith(color: colors.ink),
+    blockquote: type.body.copyWith(color: colors.ink2),
     blockquotePadding: const EdgeInsets.fromLTRB(
       AriaSpacing.sm,
       AriaSpacing.xs,
@@ -82,23 +82,20 @@ MarkdownStyleSheet _sheetOf(BuildContext context) {
       AriaSpacing.xs,
     ),
     blockquoteDecoration: BoxDecoration(
-      color: colors.surface,
-      border: Border(left: BorderSide(color: colors.primary, width: 3)),
+      color: colors.panel,
+      borderRadius: AriaRadius.smAll,
     ),
-    code: type.code.copyWith(
-      color: colors.textSecondary,
-      backgroundColor: colors.inset,
-    ),
-    codeblockPadding: const EdgeInsets.all(AriaSpacing.sm),
+    code: type.code.copyWith(color: colors.ink2, backgroundColor: colors.panel),
+    codeblockPadding: const EdgeInsets.all(14),
     codeblockDecoration: BoxDecoration(
-      color: colors.inset,
+      color: colors.panelDeep,
       borderRadius: AriaRadius.mdAll,
     ),
-    listBullet: type.body.copyWith(color: colors.primary),
+    listBullet: type.body.copyWith(color: colors.muted),
     listIndent: AriaSpacing.lg,
     blockSpacing: AriaSpacing.xs,
     horizontalRuleDecoration: BoxDecoration(
-      border: Border(top: BorderSide(color: colors.border)),
+      border: Border(top: BorderSide(color: colors.panel)),
     ),
   );
 }
@@ -167,20 +164,15 @@ class _CodeBlockState extends State<_CodeBlock> {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: AriaSpacing.xs),
       decoration: BoxDecoration(
-        color: colors.inset,
+        color: colors.panelDeep,
         borderRadius: AriaRadius.mdAll,
-        border: Border.all(color: colors.border),
       ),
+      clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AriaSpacing.sm,
-              AriaSpacing.xxs,
-              AriaSpacing.xxs,
-              AriaSpacing.xxs,
-            ),
+            padding: const EdgeInsets.fromLTRB(14, 6, 6, 6),
             child: Row(
               children: <Widget>[
                 Expanded(
@@ -188,13 +180,13 @@ class _CodeBlockState extends State<_CodeBlock> {
                     widget.language,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: type.caption.copyWith(color: colors.textMuted),
+                    style: type.tiny.copyWith(color: colors.muted),
                   ),
                 ),
                 TextButton(
                   onPressed: () => _copied ? null : _copy(),
                   style: TextButton.styleFrom(
-                    foregroundColor: colors.textMuted,
+                    foregroundColor: colors.muted,
                     minimumSize: const Size(32, 32),
                     padding: EdgeInsets.zero,
                   ),
@@ -206,13 +198,13 @@ class _CodeBlockState extends State<_CodeBlock> {
               ],
             ),
           ),
-          Divider(height: 1, color: colors.border),
+          Divider(height: 1, color: colors.panel),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.all(AriaSpacing.sm),
+            padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
             child: Text.rich(
               _highlighted(widget.code, widget.language, context),
-              style: type.code.copyWith(color: colors.textSecondary),
+              style: type.code.copyWith(color: colors.ink2, fontSize: 11.5),
             ),
           ),
         ],
@@ -248,7 +240,10 @@ void _registerLanguages() {
 
 TextSpan _highlighted(String code, String language, BuildContext context) {
   final colors = context.ariaColors;
-  final base = context.ariaType.code.copyWith(color: colors.textSecondary);
+  final base = context.ariaType.code.copyWith(
+    color: colors.ink2,
+    fontSize: 11.5,
+  );
 
   _registerLanguages();
   final hl.Result result;
@@ -289,18 +284,18 @@ TextStyle _styleOf(String? className, TextStyle base, AriaColors colors) {
     'keyword' ||
     'selector-tag' ||
     'built_in' ||
-    'meta' => base.copyWith(color: colors.primary),
+    'meta' => base.copyWith(color: colors.gold),
     'string' ||
     'attr' ||
     'attribute' ||
-    'regexp' => base.copyWith(color: colors.success),
-    'comment' || 'quote' => base.copyWith(color: colors.textMuted),
-    'number' || 'literal' || 'bullet' => base.copyWith(color: colors.warning),
+    'regexp' => base.copyWith(color: colors.ink),
+    'comment' || 'quote' => base.copyWith(color: colors.muted),
+    'number' || 'literal' || 'bullet' => base.copyWith(color: colors.ink2),
     'title' ||
     'section' ||
     'name' ||
-    'function' => base.copyWith(color: colors.text),
-    'type' || 'class' || 'variable' => base.copyWith(color: colors.attention),
-    _ => base.copyWith(color: colors.textSecondary),
+    'function' => base.copyWith(color: colors.ink),
+    'type' || 'class' || 'variable' => base.copyWith(color: colors.ink2),
+    _ => base.copyWith(color: colors.ink2),
   };
 }

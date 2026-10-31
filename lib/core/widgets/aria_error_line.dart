@@ -8,6 +8,9 @@ import '../theme/aria_tokens.dart';
 import '../theme/aria_type.dart';
 
 /// One sentence, one action, and the technical detail behind a tap.
+///
+/// A failure is a line, not a card: the design keeps the conversation free of
+/// status blocks unless the person asks for the detail.
 class AriaErrorLine extends StatefulWidget {
   const AriaErrorLine({super.key, required this.error, this.onRetry});
 
@@ -27,61 +30,66 @@ class _AriaErrorLineState extends State<AriaErrorLine> {
     final colors = context.ariaColors;
     final type = context.ariaType;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: colors.errorSoft,
-        borderRadius: AriaRadius.mdAll,
-      ),
-      padding: const EdgeInsets.all(AriaSpacing.sm),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            describeError(l10n, widget.error),
-            style: type.ui.copyWith(color: colors.error),
-          ),
-          const SizedBox(height: AriaSpacing.xxs),
-          Row(
-            children: <Widget>[
-              _QuietAction(
-                label: l10n.details,
-                onPressed: () => setState(() => _expanded = !_expanded),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Icon(
+                Icons.error_outline_rounded,
+                size: 14,
+                color: colors.danger,
               ),
-              if (widget.onRetry != null)
-                _QuietAction(label: l10n.retry, onPressed: widget.onRetry),
-            ],
-          ),
-          if (_expanded) ...<Widget>[
-            const SizedBox(height: AriaSpacing.xs),
-            SelectableText(
-              widget.error.technicalDetail,
-              style: type.code.copyWith(color: colors.textSecondary),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                describeError(l10n, widget.error),
+                style: type.caption.copyWith(color: colors.danger),
+              ),
+            ),
+            if (widget.onRetry != null)
+              TextButton(
+                onPressed: widget.onRetry,
+                style: TextButton.styleFrom(
+                  foregroundColor: colors.danger,
+                  textStyle: type.caption.copyWith(fontWeight: FontWeight.w600),
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  minimumSize: const Size(44, 32),
+                ),
+                child: Text(l10n.retry),
+              ),
+            TextButton(
+              onPressed: () => setState(() => _expanded = !_expanded),
+              style: TextButton.styleFrom(
+                foregroundColor: colors.muted,
+                textStyle: type.caption,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                minimumSize: const Size(44, 32),
+              ),
+              child: Text(l10n.details),
             ),
           ],
-        ],
-      ),
-    );
-  }
-}
-
-class _QuietAction extends StatelessWidget {
-  const _QuietAction({required this.label, required this.onPressed});
-
-  final String label;
-  final VoidCallback? onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.ariaColors;
-    return TextButton(
-      onPressed: onPressed,
-      style: TextButton.styleFrom(
-        foregroundColor: colors.error,
-        minimumSize: const Size(ariaMinTarget, ariaMinTarget),
-        padding: const EdgeInsets.symmetric(horizontal: AriaSpacing.xs),
-        textStyle: context.ariaType.label,
-      ),
-      child: Text(label),
+        ),
+        if (_expanded)
+          Padding(
+            padding: const EdgeInsets.only(left: 22, top: 4),
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+              decoration: BoxDecoration(
+                color: colors.panelDeep,
+                borderRadius: AriaRadius.smAll,
+              ),
+              child: SelectableText(
+                widget.error.technicalDetail,
+                style: type.code.copyWith(color: colors.ink2),
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

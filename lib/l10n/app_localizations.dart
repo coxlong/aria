@@ -317,7 +317,7 @@ abstract class AppLocalizations {
   /// No description provided for @languageChinese.
   ///
   /// In en, this message translates to:
-  /// **'简体中文'**
+  /// **'中文'**
   String get languageChinese;
 
   /// No description provided for @errorNetwork.
@@ -383,7 +383,7 @@ abstract class AppLocalizations {
   /// No description provided for @connectSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Pick an executor to connect to.'**
+  /// **'Pick an agent to connect to.'**
   String get connectSubtitle;
 
   /// No description provided for @connect.
@@ -410,6 +410,48 @@ abstract class AppLocalizations {
   /// **'Disconnected'**
   String get disconnected;
 
+  /// No description provided for @connectFirstAgent.
+  ///
+  /// In en, this message translates to:
+  /// **'Add an agent first'**
+  String get connectFirstAgent;
+
+  /// No description provided for @connectFirstAgentBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Add an endpoint, then Aria can start.'**
+  String get connectFirstAgentBody;
+
+  /// No description provided for @connectAria.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect Aria'**
+  String get connectAria;
+
+  /// No description provided for @connectingAria.
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting Aria'**
+  String get connectingAria;
+
+  /// No description provided for @connectionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection failed'**
+  String get connectionFailed;
+
+  /// No description provided for @changeAgent.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get changeAgent;
+
+  /// No description provided for @chooseAgent.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an agent'**
+  String get chooseAgent;
+
   /// No description provided for @reconnectingShort.
   ///
   /// In en, this message translates to:
@@ -419,7 +461,7 @@ abstract class AppLocalizations {
   /// No description provided for @manageExecutors.
   ///
   /// In en, this message translates to:
-  /// **'Manage executors'**
+  /// **'Manage agents'**
   String get manageExecutors;
 
   /// No description provided for @newChat.
@@ -511,6 +553,684 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 step} other{{count} steps}}'**
   String processDone(int count);
+
+  /// No description provided for @heroQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What can Aria do for you?'**
+  String get heroQuestion;
+
+  /// No description provided for @homeComposeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe a task to start'**
+  String get homeComposeHint;
+
+  /// No description provided for @startConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Start a conversation'**
+  String get startConversation;
+
+  /// No description provided for @recentConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent'**
+  String get recentConversations;
+
+  /// No description provided for @takesThis.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} takes this'**
+  String takesThis(String name);
+
+  /// No description provided for @noConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'No conversations yet. Start with one specific task.'**
+  String get noConversations;
+
+  /// No description provided for @searchConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'Search conversations'**
+  String get searchConversations;
+
+  /// No description provided for @findConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get findConversation;
+
+  /// No description provided for @searchKicker.
+  ///
+  /// In en, this message translates to:
+  /// **'SEARCH'**
+  String get searchKicker;
+
+  /// No description provided for @searchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Type a keyword'**
+  String get searchHint;
+
+  /// No description provided for @noSearchResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No match for “{query}”. Try another word.'**
+  String noSearchResults(String query);
+
+  /// No description provided for @conversations.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversations'**
+  String get conversations;
+
+  /// No description provided for @youPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'You: '**
+  String get youPrefix;
+
+  /// No description provided for @newConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'New conversation'**
+  String get newConversation;
+
+  /// No description provided for @now.
+  ///
+  /// In en, this message translates to:
+  /// **'now'**
+  String get now;
+
+  /// No description provided for @minutesAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} min ago'**
+  String minutesAgo(int count);
+
+  /// No description provided for @hoursAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} hr ago'**
+  String hoursAgo(int count);
+
+  /// No description provided for @settingsKicker.
+  ///
+  /// In en, this message translates to:
+  /// **'ARIA'**
+  String get settingsKicker;
+
+  /// No description provided for @theme.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get theme;
+
+  /// No description provided for @themeDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get themeDark;
+
+  /// No description provided for @themeLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get themeLight;
+
+  /// No description provided for @themeSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get themeSystem;
+
+  /// No description provided for @agents.
+  ///
+  /// In en, this message translates to:
+  /// **'Agents'**
+  String get agents;
+
+  /// No description provided for @agent.
+  ///
+  /// In en, this message translates to:
+  /// **'Agent'**
+  String get agent;
+
+  /// No description provided for @addAgent.
+  ///
+  /// In en, this message translates to:
+  /// **'Add an agent'**
+  String get addAgent;
+
+  /// No description provided for @agentName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get agentName;
+
+  /// No description provided for @agentNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Translate'**
+  String get agentNameHint;
+
+  /// No description provided for @agentNameTaken.
+  ///
+  /// In en, this message translates to:
+  /// **'That name is taken'**
+  String get agentNameTaken;
+
+  /// No description provided for @tokenOptionalHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave blank if none'**
+  String get tokenOptionalHint;
+
+  /// No description provided for @agentDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'What it handles'**
+  String get agentDesc;
+
+  /// No description provided for @agentDescHint.
+  ///
+  /// In en, this message translates to:
+  /// **'One line is enough'**
+  String get agentDescHint;
+
+  /// No description provided for @agentDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get agentDefault;
+
+  /// No description provided for @makeDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Make default'**
+  String get makeDefault;
+
+  /// No description provided for @connectThisAgent.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect this agent'**
+  String get connectThisAgent;
+
+  /// No description provided for @defaultSet.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is now the default'**
+  String defaultSet(String name);
+
+  /// No description provided for @defaultCannotDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'The default cannot be deleted. Set another as default first.'**
+  String get defaultCannotDelete;
+
+  /// No description provided for @disconnectToDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnect before deleting this agent.'**
+  String get disconnectToDelete;
+
+  /// No description provided for @add.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get add;
+
+  /// No description provided for @agentAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} added'**
+  String agentAdded(String name);
+
+  /// No description provided for @agentDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} deleted'**
+  String agentDeleted(String name);
+
+  /// No description provided for @agentSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Configuration saved'**
+  String get agentSaved;
+
+  /// No description provided for @agentLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'The address, token and directory are locked while connected. Disconnect to change them.'**
+  String get agentLocked;
+
+  /// No description provided for @disconnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnect'**
+  String get disconnect;
+
+  /// No description provided for @disconnectedKept.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnected · conversations kept'**
+  String get disconnectedKept;
+
+  /// No description provided for @disconnectConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnect from {name}?'**
+  String disconnectConfirm(String name);
+
+  /// No description provided for @done.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get done;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @backToSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get backToSettings;
+
+  /// No description provided for @connectTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect an agent'**
+  String get connectTitle;
+
+  /// No description provided for @noAgents.
+  ///
+  /// In en, this message translates to:
+  /// **'No agents yet.'**
+  String get noAgents;
+
+  /// No description provided for @currentAgent.
+  ///
+  /// In en, this message translates to:
+  /// **'Current agent'**
+  String get currentAgent;
+
+  /// No description provided for @workingNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Working…'**
+  String get workingNote;
+
+  /// No description provided for @liveStep.
+  ///
+  /// In en, this message translates to:
+  /// **'Running {name}…'**
+  String liveStep(String name);
+
+  /// No description provided for @thinkingNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Thinking…'**
+  String get thinkingNow;
+
+  /// No description provided for @replyingNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Replying…'**
+  String get replyingNow;
+
+  /// No description provided for @needsApproval.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs approval'**
+  String get needsApproval;
+
+  /// No description provided for @needsApprovalWith.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs approval: {prompt}'**
+  String needsApprovalWith(String prompt);
+
+  /// No description provided for @waitingForYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for you'**
+  String get waitingForYou;
+
+  /// No description provided for @stoppedNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Stopped · what was produced is kept.'**
+  String get stoppedNotice;
+
+  /// No description provided for @jumpLatest.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest'**
+  String get jumpLatest;
+
+  /// No description provided for @composerPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Add more detail…'**
+  String get composerPlaceholder;
+
+  /// No description provided for @composerLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Message Aria'**
+  String get composerLabel;
+
+  /// No description provided for @stopToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Stopped'**
+  String get stopToast;
+
+  /// No description provided for @turnRunningToast.
+  ///
+  /// In en, this message translates to:
+  /// **'This turn is still running. Stop it or wait.'**
+  String get turnRunningToast;
+
+  /// No description provided for @workLog.
+  ///
+  /// In en, this message translates to:
+  /// **'Work log'**
+  String get workLog;
+
+  /// No description provided for @thought.
+  ///
+  /// In en, this message translates to:
+  /// **'Thought'**
+  String get thought;
+
+  /// No description provided for @statusDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get statusDone;
+
+  /// No description provided for @statusRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'Running'**
+  String get statusRunning;
+
+  /// No description provided for @statusFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get statusFailed;
+
+  /// No description provided for @statusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get statusPending;
+
+  /// No description provided for @statusStopped.
+  ///
+  /// In en, this message translates to:
+  /// **'Stopped'**
+  String get statusStopped;
+
+  /// No description provided for @statusSkipped.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped'**
+  String get statusSkipped;
+
+  /// No description provided for @toolsUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 tool} other{{count} tools}}'**
+  String toolsUsed(int count);
+
+  /// No description provided for @thoughtsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 thought} other{{count} thoughts}}'**
+  String thoughtsCount(int count);
+
+  /// No description provided for @thoughtsCountSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **', {count, plural, =1{1 thought} other{{count} thoughts}}'**
+  String thoughtsCountSuffix(int count);
+
+  /// No description provided for @failedCountSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **' · {count} failed'**
+  String failedCountSuffix(int count);
+
+  /// No description provided for @failedSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **' · Failed'**
+  String get failedSuffix;
+
+  /// No description provided for @stepsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 step} other{{count} steps}}'**
+  String stepsCount(int count);
+
+  /// No description provided for @andMoreSteps.
+  ///
+  /// In en, this message translates to:
+  /// **' · {count, plural, =1{1 step} other{{count} steps}}'**
+  String andMoreSteps(int count);
+
+  /// No description provided for @andMore.
+  ///
+  /// In en, this message translates to:
+  /// **'…'**
+  String get andMore;
+
+  /// No description provided for @listSeparator.
+  ///
+  /// In en, this message translates to:
+  /// **', '**
+  String get listSeparator;
+
+  /// No description provided for @stepError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get stepError;
+
+  /// No description provided for @backToWorkLog.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to work log'**
+  String get backToWorkLog;
+
+  /// No description provided for @workLogGone.
+  ///
+  /// In en, this message translates to:
+  /// **'This work log is gone'**
+  String get workLogGone;
+
+  /// No description provided for @stepGone.
+  ///
+  /// In en, this message translates to:
+  /// **'This step is gone'**
+  String get stepGone;
+
+  /// No description provided for @thoughtGone.
+  ///
+  /// In en, this message translates to:
+  /// **'This thought is gone'**
+  String get thoughtGone;
+
+  /// No description provided for @modelEffortMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Model and execution'**
+  String get modelEffortMode;
+
+  /// No description provided for @thisTurn.
+  ///
+  /// In en, this message translates to:
+  /// **'THIS TURN'**
+  String get thisTurn;
+
+  /// No description provided for @reasoningEffort.
+  ///
+  /// In en, this message translates to:
+  /// **'Reasoning effort'**
+  String get reasoningEffort;
+
+  /// No description provided for @appliesNextTurn.
+  ///
+  /// In en, this message translates to:
+  /// **'Applies to the next turn.'**
+  String get appliesNextTurn;
+
+  /// No description provided for @noModels.
+  ///
+  /// In en, this message translates to:
+  /// **'This endpoint offers no model choice.'**
+  String get noModels;
+
+  /// No description provided for @noEfforts.
+  ///
+  /// In en, this message translates to:
+  /// **'This endpoint offers no effort setting.'**
+  String get noEfforts;
+
+  /// No description provided for @noModes.
+  ///
+  /// In en, this message translates to:
+  /// **'This endpoint offers no modes.'**
+  String get noModes;
+
+  /// No description provided for @modelChipLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Model {model}, reasoning effort {effort}, mode {mode}'**
+  String modelChipLabel(String model, String effort, String mode);
+
+  /// No description provided for @approvalKicker.
+  ///
+  /// In en, this message translates to:
+  /// **'APPROVAL'**
+  String get approvalKicker;
+
+  /// No description provided for @command.
+  ///
+  /// In en, this message translates to:
+  /// **'Command'**
+  String get command;
+
+  /// No description provided for @approvalDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get approvalDetail;
+
+  /// No description provided for @riskNote.
+  ///
+  /// In en, this message translates to:
+  /// **'This touches outside the workspace and cannot be undone.'**
+  String get riskNote;
+
+  /// No description provided for @cancelThis.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel this'**
+  String get cancelThis;
+
+  /// No description provided for @optionAllowOnce.
+  ///
+  /// In en, this message translates to:
+  /// **'This run only'**
+  String get optionAllowOnce;
+
+  /// No description provided for @optionAllowAlways.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop asking for this kind'**
+  String get optionAllowAlways;
+
+  /// No description provided for @optionRejectOnce.
+  ///
+  /// In en, this message translates to:
+  /// **'Do not run this time'**
+  String get optionRejectOnce;
+
+  /// No description provided for @optionRejectAlways.
+  ///
+  /// In en, this message translates to:
+  /// **'Refuse this kind from now on'**
+  String get optionRejectAlways;
+
+  /// No description provided for @requestClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'This request is closed'**
+  String get requestClosed;
+
+  /// No description provided for @connectionLost.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection lost · reconnecting; queued work replays automatically.'**
+  String get connectionLost;
+
+  /// No description provided for @connectionOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline'**
+  String get connectionOffline;
+
+  /// No description provided for @notConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Not connected'**
+  String get notConnected;
+
+  /// No description provided for @onWatch.
+  ///
+  /// In en, this message translates to:
+  /// **'On watch'**
+  String get onWatch;
+
+  /// No description provided for @connectToStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect an agent to start.'**
+  String get connectToStart;
+
+  /// No description provided for @edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
+  /// No description provided for @deleteAgentConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete “{name}”? This cannot be undone.'**
+  String deleteAgentConfirm(String name);
+
+  /// No description provided for @relink.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnect'**
+  String get relink;
+
+  /// No description provided for @sessionRefreshing.
+  ///
+  /// In en, this message translates to:
+  /// **'Refreshing…'**
+  String get sessionRefreshing;
 }
 
 class _AppLocalizationsDelegate

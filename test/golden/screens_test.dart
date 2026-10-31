@@ -4,19 +4,18 @@ library;
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:aria/core/format/aria_format.dart';
 import 'package:aria/core/providers.dart';
 import 'package:aria/core/storage/preferences.dart';
-import 'package:aria/core/theme/aria_colors.dart';
 import 'package:aria/core/theme/aria_theme.dart';
-import 'package:aria/core/theme/aria_type.dart';
-import 'package:aria/core/widgets/aria_composer.dart';
+import 'package:aria/core/widgets/aria_viewport.dart';
+import 'package:aria/domain/chat/chat_session.dart';
 import 'package:aria/domain/chat/chat_turn.dart';
 import 'package:aria/domain/chat/work_step.dart';
-import 'package:aria/features/chat/application/chat_view.dart';
+import 'package:aria/domain/session/session_ref.dart';
 import 'package:aria/features/chat/presentation/widgets/message_list.dart';
 import 'package:aria/features/connect/presentation/connect_page.dart';
 import 'package:aria/l10n/app_localizations.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -37,8 +36,6 @@ Future<void> _loadFonts() async {
   await load('Inter', 'assets/fonts/InterVariable.ttf');
   await load('JetBrains Mono', 'assets/fonts/JetBrainsMono-Regular.ttf');
 
-  // Icons come from the SDK's Material font; without it every glyph renders
-  // as an empty box and the golden would lie about the layout.
   final root = Platform.environment['FLUTTER_ROOT'];
   if (root != null) {
     final iconFont = File(
@@ -51,45 +48,60 @@ Future<void> _loadFonts() async {
 void main() {
   setUpAll(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
+    ariaNow = () => DateTime(2026, 10, 27, 10, 0);
     await _loadFonts();
   });
 
+  tearDownAll(() => ariaNow = DateTime.now);
+
   Widget harness(Widget child) {
     return MaterialApp(
-      theme: buildAriaTheme(brightness: Brightness.light, chinese: false),
+      theme: buildAriaTheme(brightness: Brightness.dark, chinese: false),
       localizationsDelegates: <LocalizationsDelegate<dynamic>>[
         AppLocalizations.delegate,
         ...GlobalMaterialLocalizations.delegates,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
+      debugShowCheckedModeBanner: false,
       home: child,
     );
   }
 
-  void sizeTo(WidgetTester tester, Size size) {
-    tester.view.physicalSize = size;
+  void phone(WidgetTester tester) {
+    tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
   }
 
   testWidgets('connect', (tester) async {
-    sizeTo(tester, const Size(1200, 800));
+    phone(tester);
     SharedPreferences.setMockInitialValues(<String, Object>{
       'aria.profiles': jsonEncode(<Object>[
         <String, Object?>{
           'id': 'p1',
-          'name': 'Studio Mac',
-          'url': 'ws://192.168.1.20:3000',
-          'cwd': '/Users/me/work',
+          'name': 'Aria',
+          'description': 'Takes what you hand over, splits it, and closes it.',
+          'url': 'wss://acp.aria.dev/ws',
+          'cwd': '/workspace/aria',
         },
         <String, Object?>{
           'id': 'p2',
+          'name': 'Studio Mac',
+          'description': 'Local executor for tests and builds.',
+          'url': 'ws://127.0.0.1:3000',
+          'cwd': '/Users/me/work',
+        },
+        <String, Object?>{
+          'id': 'p3',
           'name': '',
+          'description': '',
           'url': 'wss://agent.example.com',
           'cwd': '/srv/app',
         },
       ]),
       'aria.locale': 'en',
+      'aria.activeProfile': 'p1',
+      'aria.theme': 'dark',
     });
     final preferences = await SharedPreferences.getInstance();
 
@@ -101,7 +113,9 @@ void main() {
         child: harness(const ConnectPage()),
       ),
     );
-    await tester.pumpAndSettle();
+    // The wake aura breathes forever; settle to a fixed point instead.
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
 
     await expectLater(
       find.byType(ConnectPage),
@@ -109,56 +123,61 @@ void main() {
     );
   });
 
-  testWidgets('chat', (tester) async {
-    // A desktop-sized shot, so the composer shows its options even though the
-    // test binding would otherwise default to a phone platform.
-    debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
-    sizeTo(tester, const Size(1200, 800));
+  testWidgets('chat stream', (tester) async {
+    phone(tester);
 
-    final now = DateTime(2026, 10, 24, 9, 30);
     final turn = ChatTurn(
       id: 't1',
-      userText:
-          'Ship the public beta by Friday. Nothing goes out without my '
-          'approval.',
+      userText: 'Write the 0.5 release notes. I need them today.',
       blocks: <TurnBlock>[
         const ThoughtBlock(
           id: 'th1',
-          text: 'Checking the release checklist first.',
+          text:
+              'Read the last 14 commits and the six review notes; keep only '
+              'what changed for the outside.',
         ),
         ToolBlock(
-          step: WorkStep(
-            id: 'tc1',
-            title: 'Read the release checklist',
+          step: const WorkStep(
+            id: 'read',
+            title: 'Read the commit log',
             status: StepStatus.completed,
-            startedAt: now,
-            endedAt: now.add(const Duration(seconds: 8)),
+            output: '14 commits',
           ),
         ),
         ToolBlock(
-          step: WorkStep(
-            id: 'tc2',
-            title: 'Run the integration suite',
+          step: const WorkStep(
+            id: 'write',
+            title: 'Group the changes',
             status: StepStatus.completed,
-            startedAt: now.add(const Duration(seconds: 9)),
-            endedAt: now.add(const Duration(seconds: 41)),
+            output: 'Six groups',
           ),
         ),
-        const ToolBlock(
-          step: WorkStep(
-            id: 'tc3',
-            title: 'Publish the beta',
-            status: StepStatus.running,
-          ),
-        ),
-        TextBlock(
+        const TextBlock(
           id: 'p1',
           text:
-              'The build is ready and the notes are written.\n\n'
-              '**Blocked on you:** publishing reaches outside the workspace.\n\n'
-              '```bash\n'
-              'npm publish aria@0.1.0-beta.1 --tag beta\n'
-              '```',
+              'Three things are worth saying: a new home, delegable steps, '
+              'and outcomes that open on their own. The rest are fixes.',
+        ),
+        const ThoughtBlock(
+          id: 'th2',
+          text:
+              'Write the artifacts section: read the draft, add a paragraph, '
+              'then read the whole piece.',
+        ),
+        ToolBlock(
+          step: const WorkStep(
+            id: 'read2',
+            title: 'Read the draft',
+            status: StepStatus.completed,
+            output: 'Current draft and latest notes',
+          ),
+        ),
+        ToolBlock(
+          step: const WorkStep(
+            id: 'write2',
+            title: 'Write the artifacts section',
+            status: StepStatus.running,
+          ),
         ),
       ],
       running: true,
@@ -166,38 +185,12 @@ void main() {
 
     await tester.pumpWidget(
       harness(
-        Scaffold(
-          body: SafeArea(
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 720),
-                child: Column(
-                  children: <Widget>[
-                    const SizedBox(height: 56),
-                    Expanded(
-                      child: MessageList(
-                        view: ChatView(
-                          sessionId: 's1',
-                          turns: <ChatTurn>[turn],
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: AriaComposer(
-                        hint: 'What should Aria do?',
-                        running: true,
-                        onStop: () {},
-                        onSubmit: (text) async => true,
-                        chips: const <Widget>[
-                          _Chip('Sonnet 4.5'),
-                          _Chip('Default'),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+        AriaViewport(
+          child: MessageList(
+            session: ChatSession(
+              ref: const SessionRef('a', 's1'),
+              turns: <ChatTurn>[turn],
+              running: true,
             ),
           ),
         ),
@@ -206,39 +199,11 @@ void main() {
     await tester.pump();
 
     await expectLater(
-      find.byType(Scaffold),
+      find.byType(AriaViewport),
       matchesGoldenFile('goldens/chat.png'),
     );
 
-    // The running process pill keeps a timer alive; tear the tree down so the
-    // binding does not complain about it after the test.
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pump(const Duration(seconds: 1));
-    debugDefaultTargetPlatformOverride = null;
   });
-}
-
-class _Chip extends StatelessWidget {
-  const _Chip(this.label);
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.ariaColors;
-    return Container(
-      constraints: const BoxConstraints(maxWidth: 110),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      decoration: BoxDecoration(
-        color: colors.inset,
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        label,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: context.ariaType.caption.copyWith(color: colors.textSecondary),
-      ),
-    );
-  }
 }

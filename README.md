@@ -62,14 +62,17 @@ The current version has a concrete focus: **reliably connecting to and working w
 
 - Save, edit, and delete multiple agent server profiles;
 - Connect to ACP agents through `ws://` / `wss://` WebSocket bridges, with optional Bearer Token authentication;
-- Stream agent messages, thoughts, and tool calls;
-- Inspect execution activity and interrupt the active turn;
+- Start a conversation from the home surface, or reopen one the agent still knows about;
+- Stream agent messages, thoughts, and tool calls into one transcript, folding consecutive thinking and tool calls into a run and keeping prose as the only break;
+- Open a run's work log, read each step's input and output, and follow a failure to the step that failed;
+- Interrupt the active turn while keeping what was already produced;
 - Review permission requests before sensitive operations;
 - Switch models, modes, and reasoning effort when supported by the agent;
 - List and restore previous sessions when supported by the agent;
 - Reconnect automatically and flush the transport outbox in order after reconnecting;
 - Use English, Simplified Chinese, or the system language;
-- Work with a responsive interface designed for mobile and desktop;
+- Choose a dark, light, or system theme;
+- Work with a phone-first interface that stays one centered reading column on wide screens;
 - Store server tokens using secure storage.
 
 Aria is not a model and does not embed an agent runtime. The current connection path is:
@@ -204,10 +207,11 @@ aria/
 │   ├── domain/               # Pure Dart models and the Executor interface
 │   ├── data/                 # The ACP implementation of Executor
 │   ├── features/
-│   │   ├── connection/       # The one controller that owns the ACP client
-│   │   ├── connect/          # Server list and connection entry
-│   │   ├── chat/             # Sessions, streaming, activity, and permissions
-│   │   └── settings/         # Server profiles and language
+│   │   ├── connection/       # AgentManager: one runtime per agent, session state per conversation
+│   │   ├── connect/          # Agent list and connection entry
+│   │   ├── home/             # The question, the new-conversation input, recent sessions
+│   │   ├── chat/             # One stream, folded runs, work log, and permissions
+│   │   └── settings/         # Agent profiles, theme, and language
 │   ├── router/               # go_router configuration
 │   └── l10n/                 # English and Simplified Chinese resources
 ├── packages/
@@ -225,6 +229,8 @@ aria/
 - `packages/acp` depends only on the Dart SDK, not Flutter, and contains no UI copy;
 - `lib/domain` depends on neither Flutter nor `package:acp`; `lib/data` translates protocol types into domain types and never leaks them upward;
 - `lib/features` accesses state through controllers rather than creating ACP clients directly;
+- Conversation data and rendering are separate: `AgentManager` receives events and owns `ChatSession` state keyed by `(agent, session)`, while pages only read that state and send commands. Leaving a conversation does not stop its turn, and reopening one the executor still holds is a switch, not a reload;
+- Each connected agent has its own runtime, so several agents can stay connected without sharing connection or turn state;
 - User-visible copy is provided through Flutter localization resources instead of being hardcoded in widgets;
 - Connection state and turn state remain separate so a network reconnect is not mistaken for the end of a turn.
 
